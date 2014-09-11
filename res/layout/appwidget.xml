@@ -13,7 +13,7 @@
         android:loopViews="true" />
 
     <ImageView
-        android:id="@+id/tmp"
+        android:id="@+id/led_on"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/back_on"
