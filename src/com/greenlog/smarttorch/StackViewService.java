@@ -1,15 +1,17 @@
 package com.greenlog.smarttorch;
 
-import android.appwidget.AppWidgetManager;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 public class StackViewService extends RemoteViewsService {
-
 	@Override
 	public RemoteViewsFactory onGetViewFactory(final Intent intent) {
 		Log.v("sss", "onGetViewFactory");
@@ -19,27 +21,26 @@ public class StackViewService extends RemoteViewsService {
 }
 
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-	// TODO: remove hardcoded count
-	private static final int mCount = 3;
-
 	private final Context mContext;
-	private final int mAppWidgetId;
-	private int mTmp;
+
+	private final List<TorchMode> mTorchModes = new ArrayList<TorchMode>();
 
 	public StackRemoteViewsFactory(final Context context, final Intent intent) {
 		mContext = context;
-		mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-				AppWidgetManager.INVALID_APPWIDGET_ID);
 	}
 
 	@Override
 	public void onCreate() {
 		Log.v("sss", "onCreate");
+		// TODO: remove this hardcode
+		for (int i = 0; i < 5; i++) {
+			mTorchModes.add((new TorchMode()).setShakeSensorEnabled(i % 2 == 0)
+					.setTimeoutSec(i * 10));
+		}
 	}
 
 	@Override
 	public void onDataSetChanged() {
-		mTmp++;
 	}
 
 	@Override
@@ -49,7 +50,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 	@Override
 	public int getCount() {
-		return mCount;
+		return mTorchModes.size();
 	}
 
 	@Override
@@ -57,10 +58,21 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		final RemoteViews rv = new RemoteViews(mContext.getPackageName(),
 				R.layout.stackview_item);
 
-		rv.setTextViewText(R.id.stackview_item_text, position * 10 + mTmp + "s");
+		final TorchMode torchMode = getItem(position);
+		String itemText;
+		if (torchMode.isInfinitely()) {
+			// TODO: localize "∞"
+			itemText = "∞";
+		} else {
+			// TODO: localize "s"
+			itemText = torchMode.getTimeoutSec() + "s";
+		}
+		rv.setTextViewText(R.id.stackview_item_text, itemText);
+		rv.setViewVisibility(R.id.stackview_item_icon,
+				torchMode.isShakeSensorEnabled() ? View.VISIBLE : View.GONE);
 
-		final Bundle extras = new Bundle();
-		extras.putInt(SmartTorchWidget.CLICK_ACTION_ITEM, position);
+		final Bundle extras = torchMode.getBundle();
+
 		final Intent fillInIntent = new Intent();
 		fillInIntent.putExtras(extras);
 		rv.setOnClickFillInIntent(R.id.stackview_item, fillInIntent);
@@ -79,13 +91,15 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 	@Override
 	public long getItemId(final int position) {
-		// TODO: maybe, we must store ID in the items
 		return position;
 	}
 
 	@Override
 	public boolean hasStableIds() {
-		// TODO: has stable ids?
-		return true;
+		return false;
+	}
+
+	private TorchMode getItem(final int position) {
+		return mTorchModes.get(position);
 	}
 }

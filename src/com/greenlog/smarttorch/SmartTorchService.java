@@ -17,6 +17,7 @@ import android.widget.RemoteViews;
 public class SmartTorchService extends Service {
 	public static final String SERVICE_ACTION_TURN_ON = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_ON";
 	public static final String SERVICE_ACTION_TURN_OFF = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_OFF";
+	// TODO: rename it to "...update_widgets"
 	public static final String SERVICE_ACTION_GET_STATUS = "com.greenlog.smarttorch.SERVICE_ACTION_GET_STATUS";
 
 	private static final int NOTIFY_ID = 1;
@@ -49,6 +50,11 @@ public class SmartTorchService extends Service {
 		}
 		switch (intent.getAction()) {
 		case SERVICE_ACTION_TURN_ON:
+			final TorchMode torchMode = new TorchMode(intent.getExtras());
+			Log.w("sss", "@@@????????TS inf" + torchMode.isInfinitely()
+					+ " timeout " + torchMode.getTimeoutSec() + " shake "
+					+ torchMode.isShakeSensorEnabled());
+
 			final Intent newIntent = new Intent(this, SmartTorchService.class);
 			newIntent.setAction(SERVICE_ACTION_TURN_OFF);
 			final PendingIntent newPendingIntent = PendingIntent.getService(
@@ -77,12 +83,11 @@ public class SmartTorchService extends Service {
 			stopSelf();
 			break;
 		case SERVICE_ACTION_GET_STATUS:
-			sendStatusToWidgets();
+			updateWidgets();
 			if (!mIsLedOn)
 				stopSelf();
 			break;
 		}
-		// TODO Auto-generated method stub
 		return START_NOT_STICKY;
 	}
 
@@ -97,12 +102,12 @@ public class SmartTorchService extends Service {
 			return;
 		mIsLedOn = isOn;
 		Log.v("sss", "SmartTorchService turnLed " + mIsLedOn);
-		sendStatusToWidgets();
+		updateWidgets();
 	}
 
 	@SuppressWarnings("deprecation")
-	private void sendStatusToWidgets() {
-		Log.v("sss", "SmartTorchService sendStatusToWidgets " + mIsLedOn);
+	private void updateWidgets() {
+		Log.v("sss", "SmartTorchService updateWidgets " + mIsLedOn);
 
 		final AppWidgetManager appWidgetManager = AppWidgetManager
 				.getInstance(this);
@@ -135,7 +140,7 @@ public class SmartTorchService extends Service {
 							: SmartTorchWidget.CLICK_ACTION_LED_ON);
 			clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 					appWidgetIds[i]);
-			clickIntent.setData(Uri.parse(intent
+			clickIntent.setData(Uri.parse(clickIntent
 					.toUri(Intent.URI_INTENT_SCHEME)));
 
 			final PendingIntent clickPendingIntent = PendingIntent
