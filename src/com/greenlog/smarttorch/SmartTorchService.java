@@ -62,7 +62,7 @@ public class SmartTorchService extends Service {
 
 			// TODO: strings
 			final Notification.Builder notificationBuilder = new Notification.Builder(
-					this).setContentTitle("TODO title")
+					this).setContentTitle(getString(R.string.notify_title))
 					.setContentText("TODO content")
 					.setSmallIcon(R.drawable.ic_stat_notify)
 					.setContentIntent(newPendingIntent);
