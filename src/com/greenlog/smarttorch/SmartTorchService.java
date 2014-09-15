@@ -14,6 +14,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -21,7 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-public class SmartTorchService extends Service {
+public class SmartTorchService extends Service implements SensorEventListener {
 	public static final String SERVICE_ACTION_TURN_ON = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_ON";
 	public static final String SERVICE_ACTION_TURN_OFF = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_OFF";
 	// TODO: rename it to "...update_widgets"
@@ -33,22 +37,37 @@ public class SmartTorchService extends Service {
 
 	private boolean mIsLedOn = false;
 	private TorchMode mTorchMode = null;
-	private final boolean mIsShaking = false;
+	private boolean mIsShaking = false;
 	private long mRemainSeconds = 0;
 	private long mWhenTurnOff;
 
 	private Timer mTimer = null;
 
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private final float mAccelerationSlow[] = new float[3];
+	private final float mAccelerationFast[] = new float[3];
+	private final static float ACCELERATION_FILTER_ALPHA_SLOW = 0.2f;
+	private final static float ACCELERATION_FILTER_ALPHA_FAST = 1f;
+	// TODO: configurable sensitivity!!!!!
+	private final static float ACCELERATION_THRESHOLD = 0.1f;
+
 	@Override
 	public void onCreate() {
 		Log.v("sss", "SmartTorchService onCreate");
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager
+				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
 		super.onCreate();
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.v("sss", "SmartTorchService onDestroy");
+		stopSensor();
 		stopTimer();
 		turnLed(false);
 		super.onDestroy();
@@ -69,6 +88,10 @@ public class SmartTorchService extends Service {
 					+ mTorchMode.isShakeSensorEnabled());
 
 			if (updateTimer(true)) {
+				if (!mTorchMode.isInfinitely()
+						&& mTorchMode.isShakeSensorEnabled()) {
+					startSensor();
+				}
 				final Notification notification = updateNotification();
 				startForeground(NOTIFY_ID, notification);
 				turnLed(true);
@@ -77,6 +100,7 @@ public class SmartTorchService extends Service {
 			}
 			break;
 		case SERVICE_ACTION_TURN_OFF:
+			stopSensor();
 			stopTimer();
 			turnLed(false);
 			stopSelf();
@@ -84,6 +108,7 @@ public class SmartTorchService extends Service {
 		case SERVICE_ACTION_GET_STATUS:
 			updateWidgets();
 			if (!mIsLedOn) {
+				stopSensor();
 				stopTimer();
 				stopSelf();
 			}
@@ -120,30 +145,27 @@ public class SmartTorchService extends Service {
 		mRemainSeconds = (mWhenTurnOff - now) / 1000;
 
 		if (mRemainSeconds > 0) {
-			startTimer();
+			if (mTimer == null) {
+				mTimer = new Timer();
+				mTimer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						if (!updateTimer(false)) {
+							stopTimer();
+							turnLed(false);
+							stopSelf();
+						} else {
+							final Notification notification = updateNotification();
+							mNotificationManager
+									.notify(NOTIFY_ID, notification);
+						}
+					}
+				}, 500, 500);
+			}
 			return true;
 		} else {
 			stopTimer();
 			return false;
-		}
-	}
-
-	private void startTimer() {
-		if (mTimer == null) {
-			mTimer = new Timer();
-			mTimer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					if (!updateTimer(false)) {
-						stopTimer();
-						turnLed(false);
-						stopSelf();
-					} else {
-						final Notification notification = updateNotification();
-						mNotificationManager.notify(NOTIFY_ID, notification);
-					}
-				}
-			}, 500, 500);
 		}
 	}
 
@@ -245,5 +267,69 @@ public class SmartTorchService extends Service {
 			}
 			appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
 		}
+	}
+
+	private void startSensor() {
+		Log.v("sss", "@@@ startSensor");
+		mSensorManager.registerListener(this, mAccelerometer,
+				SensorManager.SENSOR_DELAY_UI);
+	}
+
+	private void stopSensor() {
+		Log.v("sss", "@@@ stopSensor");
+		mSensorManager.unregisterListener(this);
+	}
+
+	@Override
+	public void onSensorChanged(final SensorEvent event) {
+
+		for (int i = 0; i < 3; i++) {
+			mAccelerationSlow[i] = ACCELERATION_FILTER_ALPHA_SLOW
+					* event.values[i] + (1 - ACCELERATION_FILTER_ALPHA_SLOW)
+					* mAccelerationSlow[i];
+			mAccelerationFast[i] = ACCELERATION_FILTER_ALPHA_FAST
+					* event.values[i] + (1 - ACCELERATION_FILTER_ALPHA_FAST)
+					* mAccelerationFast[i];
+		}
+
+		for (int i = 0; i < 3; i++) {
+			mIsShaking = (Math.abs(mAccelerationSlow[i] - mAccelerationFast[i]) > ACCELERATION_THRESHOLD);
+			if (mIsShaking)
+				break;
+		}
+		// Log.v("sss",
+		// "@@@ dx "
+		// + Math.round(10000 * Math.abs(mAccelerationSlow[0]
+		// - mAccelerationFast[0]))
+		// + " dy "
+		// + +Math.round(10000 * Math.abs(mAccelerationSlow[1]
+		// - mAccelerationFast[1]))
+		// + " dz "
+		// + +Math.round(10000 * Math.abs(mAccelerationSlow[2]
+		// - mAccelerationFast[2])));
+	}
+
+	@Override
+	public void onAccuracyChanged(final Sensor sensor, final int accuracy) {
+		String accuracyString = "unknown";
+		switch (accuracy) {
+		case SensorManager.SENSOR_STATUS_ACCURACY_HIGH:
+			accuracyString = "high";
+			break;
+		case SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM:
+			accuracyString = "medium";
+			break;
+		case SensorManager.SENSOR_STATUS_ACCURACY_LOW:
+			accuracyString = "low";
+			break;
+		case SensorManager.SENSOR_STATUS_NO_CONTACT:
+			accuracyString = "no_contact";
+			break;
+		case SensorManager.SENSOR_STATUS_UNRELIABLE:
+			accuracyString = "unreliable";
+			break;
+		}
+		Log.v("sss", "onAccuracyChanged " + sensor.getName() + " accuracy "
+				+ accuracyString);
 	}
 }

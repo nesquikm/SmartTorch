@@ -11,6 +11,9 @@ import android.os.Bundle;
 // TODO: set correct icon sizes
 // TODO: set as large as possible large icon for lockscreen
 // TODO: automatically lock screen after turn on (configurable)
+// TODO: preview icon
+// TODO: icon in settings->running app (service icon
+// TODO: update widget when shaking/timer
 
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";

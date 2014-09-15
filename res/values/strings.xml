@@ -1,6 +1,9 @@
 <resources>
 
     <string name="app_name">Smart Torch</string>
+    <string name="widget_infinity">∞</string>
+    <string name="widget_seconds">s</string>
+    
     <string name="notify_title">Smart Torch is turned on</string>
     <string name="notify_until_stop_shaking">and will be on until you stop shaking the phone</string>
     <string name="notify_timer">and will turn off after %1$s%2$s</string>
