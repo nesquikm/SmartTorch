@@ -3,7 +3,14 @@
     <string name="app_name">Smart Torch</string>
     <string name="notify_title">Smart Torch is turned on</string>
     <string name="notify_until_stop_shaking">and will be on until you stop shaking the phone</string>
-    <string name="notify_timer">and will turn off after %1$d min %2$d sec</string>
+    <string name="notify_timer">and will turn off after %1$s%2$s</string>
     <string name="notify_turn_off">and you can turn it off by clicking here</string>
+
+    <plurals name="min">
+        <item quantity="other">%d m</item>
+    </plurals>
+    <plurals name="sec">
+        <item quantity="other">%d s</item>
+    </plurals>
 
 </resources>

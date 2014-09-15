@@ -10,6 +10,7 @@ import android.os.Bundle;
 // TODO: android:previewImage="@drawable/preview"
 // TODO: set correct icon sizes
 // TODO: set as large as possible large icon for lockscreen
+// TODO: automatically lock screen after turn on (configurable)
 
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";
