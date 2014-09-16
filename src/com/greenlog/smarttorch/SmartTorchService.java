@@ -32,8 +32,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	public static final String SERVICE_ACTION_TURN_ON = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_ON";
 	public static final String SERVICE_ACTION_TURN_OFF = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_OFF";
-	// TODO: rename it to "...update_widgets"
-	public static final String SERVICE_ACTION_GET_STATUS = "com.greenlog.smarttorch.SERVICE_ACTION_GET_STATUS";
+	public static final String SERVICE_ACTION_UPDATE_WIDGETS = "com.greenlog.smarttorch.SERVICE_ACTION_UPDATE_WIDGETS";
 
 	private static final int NOTIFY_ID = 1;
 
@@ -53,7 +52,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	private final float mAccelerationFast[] = new float[3];
 	private final static float ACCELERATION_FILTER_ALPHA_SLOW = 0.2f;
 	private final static float ACCELERATION_FILTER_ALPHA_FAST = 1f;
-	// TODO: configurable sensitivity!!!!!
+	// TODO: 01. configurable sensitivity!!!!!
 	private final static float ACCELERATION_THRESHOLD = 0.1f;
 
 	private TorchCamera mTorchCamera;
@@ -104,7 +103,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		case SERVICE_ACTION_TURN_OFF:
 			stopSelf();
 			break;
-		case SERVICE_ACTION_GET_STATUS:
+		case SERVICE_ACTION_UPDATE_WIDGETS:
 			updateWidgets();
 			if (!mIsLedOn) {
 				stopSelf();

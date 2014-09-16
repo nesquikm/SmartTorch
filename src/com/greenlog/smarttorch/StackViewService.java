@@ -32,7 +32,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 	@Override
 	public void onCreate() {
 		Log.v("sss", "onCreate");
-		// TODO: remove this hardcode
+		// TODO: 02. remove this hardcode
 		for (int i = 0; i < 5; i++) {
 			mTorchModes.add((new TorchMode()).setShakeSensorEnabled(i % 2 == 0)
 					.setTimeoutSec(i * 10));

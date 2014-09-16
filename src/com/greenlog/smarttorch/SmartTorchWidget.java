@@ -6,14 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-// TODO: android:configure="com.example.android.ExampleAppWidgetConfigure"
-// TODO: android:previewImage="@drawable/preview"
-// TODO: set correct icon sizes
-// TODO: set as large as possible large icon for lockscreen
-// TODO: automatically lock screen after turn on (configurable)
-// TODO: preview icon
-// TODO: icon in settings->running app (service icon
-// TODO: update widget when shaking/timer
+// TODO: 01. android:configure="com.example.android.ExampleAppWidgetConfigure"
+// TODO: 03. android:previewImage="@drawable/preview"
+// TODO: 03. set correct icon sizes
+// TODO: 04. set as large as possible large icon for lockscreen
+// TODO: 10. automatically lock screen after turn on (configurable)
+// TODO: 03. icon in settings->running app (service icon
+// TODO: 02. update widget when shaking/timer
 
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";
@@ -41,7 +40,7 @@ public class SmartTorchWidget extends AppWidgetProvider {
 	public void onUpdate(final Context context,
 			final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
 		sendCommandToService(context,
-				SmartTorchService.SERVICE_ACTION_GET_STATUS, null);
+				SmartTorchService.SERVICE_ACTION_UPDATE_WIDGETS, null);
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
