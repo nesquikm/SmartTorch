@@ -24,6 +24,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class SmartTorchService extends Service implements SensorEventListener {
 	public static final String SERVICE_ACTION_TURN_ON = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_ON";
@@ -52,6 +53,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	// TODO: configurable sensitivity!!!!!
 	private final static float ACCELERATION_THRESHOLD = 0.1f;
 
+	private TorchCamera mTorchCamera;
+
 	@Override
 	public void onCreate() {
 		Log.v("sss", "SmartTorchService onCreate");
@@ -60,6 +63,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mAccelerometer = mSensorManager
 				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		mTorchCamera = new TorchCamera(this);
 
 		super.onCreate();
 	}
@@ -83,10 +88,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		switch (intent.getAction()) {
 		case SERVICE_ACTION_TURN_ON:
 			mTorchMode = new TorchMode(intent.getExtras());
-			Log.w("sss", "@@@????????TS inf" + mTorchMode.isInfinitely()
-					+ " timeout " + mTorchMode.getTimeoutSec() + " shake "
-					+ mTorchMode.isShakeSensorEnabled());
-
 			if (updateTimer(true)) {
 				if (!mTorchMode.isInfinitely()
 						&& mTorchMode.isShakeSensorEnabled()) {
@@ -126,9 +127,19 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	private void turnLed(final boolean isOn) {
 		if (isOn == mIsLedOn)
 			return;
-		mIsLedOn = isOn;
+
 		Log.v("sss", "SmartTorchService turnLed " + mIsLedOn);
+		final boolean oldIsLedOn = mIsLedOn;
+		mIsLedOn = isOn;
 		updateWidgets();
+		if (!mTorchCamera.turn(isOn)) {
+			if (isOn) {
+				Toast.makeText(this, R.string.cant_turn_on, Toast.LENGTH_SHORT)
+						.show();
+			}
+			mIsLedOn = oldIsLedOn;
+			updateWidgets();
+		}
 	}
 
 	private boolean updateTimer(final boolean forceRestart) {

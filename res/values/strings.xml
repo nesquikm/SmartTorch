@@ -15,5 +15,7 @@
     <plurals name="sec">
         <item quantity="other">%d s</item>
     </plurals>
+    
+    <string name="cant_turn_on">Can\'t turn on the torch now</string>
 
 </resources>
