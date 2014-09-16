@@ -21,12 +21,15 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 public class SmartTorchService extends Service implements SensorEventListener {
+	private static final String TAG = SmartTorchService.class.getSimpleName();
+
 	public static final String SERVICE_ACTION_TURN_ON = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_ON";
 	public static final String SERVICE_ACTION_TURN_OFF = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_OFF";
 	// TODO: rename it to "...update_widgets"
@@ -55,6 +58,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private TorchCamera mTorchCamera;
 
+	private PowerManager.WakeLock mWakeLock = null;
+
 	@Override
 	public void onCreate() {
 		Log.v("sss", "SmartTorchService onCreate");
@@ -75,6 +80,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		stopSensor();
 		stopTimer();
 		turnLed(false);
+		stopWakeLock();
 		super.onDestroy();
 	}
 
@@ -92,6 +98,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			updateTimer(true);
 			final Notification notification = updateNotification();
 			startForeground(NOTIFY_ID, notification);
+			startWakeLock();
 			turnLed(true);
 			break;
 		case SERVICE_ACTION_TURN_OFF:
@@ -130,6 +137,27 @@ public class SmartTorchService extends Service implements SensorEventListener {
 				stopSelf();
 			}
 		}
+	}
+
+	private void startWakeLock() {
+		if (mTorchMode.isInfinitely()) {
+			return;
+		}
+
+		if (mWakeLock != null) {
+			return;
+		}
+
+		final PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+				TAG);
+
+		mWakeLock.acquire();
+	}
+
+	private void stopWakeLock() {
+		if (mWakeLock != null)
+			mWakeLock.release();
 	}
 
 	private void updateTimer(final boolean forceRestart) {

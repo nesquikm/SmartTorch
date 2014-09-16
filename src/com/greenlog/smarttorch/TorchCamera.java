@@ -17,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 public class TorchCamera {
-	private static final String TAG = PreviewHolder.class.getSimpleName();
+	private static final String TAG = TorchCamera.class.getSimpleName();
 
 	private final Context mContext;
 	private Camera mCamera = null;
@@ -63,7 +63,7 @@ public class TorchCamera {
 	}
 
 	public boolean turn(final boolean isOn) {
-		Log.v("sss", "TorchCamera turn " + isOn);
+		Log.v(TAG, "turn " + isOn);
 		if (isOn) {
 			if (mCamera == null) {
 				try {
