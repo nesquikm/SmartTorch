@@ -88,29 +88,18 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		switch (intent.getAction()) {
 		case SERVICE_ACTION_TURN_ON:
 			mTorchMode = new TorchMode(intent.getExtras());
-			if (updateTimer(true)) {
-				if (!mTorchMode.isInfinitely()
-						&& mTorchMode.isShakeSensorEnabled()) {
-					startSensor();
-				}
-				final Notification notification = updateNotification();
-				startForeground(NOTIFY_ID, notification);
-				turnLed(true);
-			} else {
-				stopSelf();
-			}
+			startSensor();
+			updateTimer(true);
+			final Notification notification = updateNotification();
+			startForeground(NOTIFY_ID, notification);
+			turnLed(true);
 			break;
 		case SERVICE_ACTION_TURN_OFF:
-			stopSensor();
-			stopTimer();
-			turnLed(false);
 			stopSelf();
 			break;
 		case SERVICE_ACTION_GET_STATUS:
 			updateWidgets();
 			if (!mIsLedOn) {
-				stopSensor();
-				stopTimer();
 				stopSelf();
 			}
 			break;
@@ -133,18 +122,19 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mIsLedOn = isOn;
 		updateWidgets();
 		if (!mTorchCamera.turn(isOn)) {
+			mIsLedOn = oldIsLedOn;
+			updateWidgets();
 			if (isOn) {
 				Toast.makeText(this, R.string.cant_turn_on, Toast.LENGTH_SHORT)
 						.show();
+				stopSelf();
 			}
-			mIsLedOn = oldIsLedOn;
-			updateWidgets();
 		}
 	}
 
-	private boolean updateTimer(final boolean forceRestart) {
+	private void updateTimer(final boolean forceRestart) {
 		if (mTorchMode.isInfinitely()) {
-			return true;
+			return;
 		}
 
 		final long now = (new Date()).getTime();
@@ -155,28 +145,20 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 		mRemainSeconds = (mWhenTurnOff - now) / 1000;
 
-		if (mRemainSeconds > 0) {
-			if (mTimer == null) {
-				mTimer = new Timer();
-				mTimer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-						if (!updateTimer(false)) {
-							stopTimer();
-							turnLed(false);
-							stopSelf();
-						} else {
-							final Notification notification = updateNotification();
-							mNotificationManager
-									.notify(NOTIFY_ID, notification);
-						}
+		if (mTimer == null) {
+			mTimer = new Timer();
+			mTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					updateTimer(false);
+					if (mRemainSeconds <= 0) {
+						stopSelf();
+					} else {
+						final Notification notification = updateNotification();
+						mNotificationManager.notify(NOTIFY_ID, notification);
 					}
-				}, 500, 500);
-			}
-			return true;
-		} else {
-			stopTimer();
-			return false;
+				}
+			}, 500, 500);
 		}
 	}
 
@@ -282,6 +264,9 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private void startSensor() {
 		Log.v("sss", "@@@ startSensor");
+		if (mTorchMode.isInfinitely() || !mTorchMode.isShakeSensorEnabled()) {
+			return;
+		}
 		mSensorManager.registerListener(this, mAccelerometer,
 				SensorManager.SENSOR_DELAY_UI);
 	}
