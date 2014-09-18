@@ -13,6 +13,7 @@ import android.os.Bundle;
 // TODO: 10. automatically lock screen after turn on (configurable)
 // TODO: 03. icon in settings->running app (service icon
 // TODO: 02. update widget when shaking/timer
+// TODO: 05. remove/change Log.v (sss)
 
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";

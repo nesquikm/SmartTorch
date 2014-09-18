@@ -10,17 +10,18 @@
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="true" />
-    
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
-    <uses-feature android:name="android.hardware.camera.flash"
+    <uses-feature
+        android:name="android.hardware.camera.flash"
         android:required="true" />
-    
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -43,6 +44,15 @@
         <service
             android:name="SmartTorchService"
             android:exported="false" />
+
+        <activity android:name=".SmartTorchWidgetConfigure" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                    
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

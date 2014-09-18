@@ -80,6 +80,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 	@Override
 	public RemoteViews getLoadingView() {
+		// TODO: 11. eliminate "Loading..."
 		return null;
 	}
 
