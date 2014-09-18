@@ -33,7 +33,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 	public void onCreate() {
 		Log.v("sss", "onCreate");
 		// TODO: 02. remove this hardcode
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 20; i++) {
 			mTorchModes.add((new TorchMode()).setShakeSensorEnabled(i % 2 == 0)
 					.setTimeoutSec(i * 10));
 		}
@@ -61,12 +61,13 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		final TorchMode torchMode = getItem(position);
 		String itemText;
 		if (torchMode.isInfinitely()) {
-			itemText = mContext.getString(R.string.widget_infinity);
+			itemText = mContext.getString(R.string.infinity);
 		} else {
 			itemText = torchMode.getTimeoutSec()
 					+ mContext.getString(R.string.widget_seconds);
 		}
-		rv.setTextViewText(R.id.stackview_item_text, itemText);
+		rv.setTextViewText(R.id.stackview_item_text, Utils.formatTimerTime(
+				mContext, torchMode.getTimeoutSec(), true));
 		rv.setViewVisibility(R.id.stackview_item_icon,
 				torchMode.isShakeSensorEnabled() ? View.VISIBLE : View.GONE);
 

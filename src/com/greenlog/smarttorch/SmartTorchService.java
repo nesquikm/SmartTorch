@@ -13,7 +13,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -37,6 +36,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	private static final int NOTIFY_ID = 1;
 
 	private NotificationManager mNotificationManager;
+	private Notification.Builder mNotificationBuilder = null;
 
 	private boolean mIsLedOn = false;
 	private TorchMode mTorchMode = null;
@@ -211,28 +211,27 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		} else if (mTorchMode.isShakeSensorEnabled() && mIsShaking) {
 			content = getString(R.string.notify_until_stop_shaking);
 		} else {
-			final Resources res = getResources();
-			final int remainMin = (int) (mRemainSeconds / 60);
-			final int remainSec = (int) (mRemainSeconds % 60);
-			final String remainMinString = remainMin > 0 ? res
-					.getQuantityString(R.plurals.min, remainMin, remainMin)
-					+ " " : "";
-			content = getString(R.string.notify_timer, remainMinString,
-					res.getQuantityString(R.plurals.sec, remainSec, remainSec));
+			content = getString(R.string.notify_timer,
+					Utils.formatTimerTime(this, mRemainSeconds, false));
 		}
 
-		final Notification.Builder notificationBuilder = new Notification.Builder(
-				this).setContentTitle(getString(R.string.notify_title))
-				.setContentText(content)
-				.setSmallIcon(R.drawable.ic_stat_notify)
-				.setContentIntent(newPendingIntent);
+		// Only for first time
+		if (mNotificationBuilder == null) {
+			mNotificationBuilder = new Notification.Builder(this)
+					.setContentTitle(getString(R.string.notify_title))
+					.setSmallIcon(R.drawable.ic_stat_notify)
+					.setContentIntent(newPendingIntent);
+		}
+
+		mNotificationBuilder.setContentText(content);
+
 		Notification notification;
 
 		if (Build.VERSION.SDK_INT >= 16) {
-			notification = notificationBuilder.setPriority(
+			notification = mNotificationBuilder.setPriority(
 					Notification.PRIORITY_LOW).build();
 		} else {
-			notification = notificationBuilder.getNotification();
+			notification = mNotificationBuilder.getNotification();
 		}
 
 		return notification;

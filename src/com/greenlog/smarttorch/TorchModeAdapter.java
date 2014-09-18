@@ -27,7 +27,7 @@ public class TorchModeAdapter extends BaseAdapter {
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		// TODO: 02. remove this hardcode
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 20; i++) {
 			mTorchModes.add((new TorchMode()).setShakeSensorEnabled(i % 2 == 0)
 					.setTimeoutSec(i * 10));
 		}
@@ -61,20 +61,14 @@ public class TorchModeAdapter extends BaseAdapter {
 
 		final TorchMode torchMode = getItem(position);
 
-		String itemText;
-		if (torchMode.isInfinitely()) {
-			itemText = mContext.getString(R.string.widget_infinity);
-		} else {
-			itemText = torchMode.getTimeoutSec()
-					+ mContext.getString(R.string.widget_seconds);
-		}
-		((TextView) view.findViewById(R.id.stackview_item_text))
-				.setText(itemText);
+		((TextView) view.findViewById(R.id.stackview_item_text)).setText(Utils
+				.formatTimerTime(mContext, torchMode.getTimeoutSec(), true));
 		((ImageView) view.findViewById(R.id.stackview_item_icon))
 				.setVisibility(torchMode.isShakeSensorEnabled() ? View.VISIBLE
 						: View.GONE);
 
-		final String tmp = itemText;
+		// TODO: 00. What should i pass as tmp?!
+		final String tmp = "";
 		view.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(final View v) {
