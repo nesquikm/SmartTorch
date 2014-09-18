@@ -1,11 +1,9 @@
 package com.greenlog.smarttorch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -23,20 +21,27 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 
 public class TorchModeAdapter extends BaseAdapter {
-	private final List<TorchMode> mTorchModes = new ArrayList<TorchMode>();
+	private TorchModes mTorchModes;
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
 	private final int[] mTimerValues;
 	private final ArrayAdapter<String> mTimerValuesAdapter;
 
-	public TorchModeAdapter(final Context context) {
+	private final SettingsManager mSettingsManager;
+
+	/**
+	 * Constructor, reads modes from bundle
+	 */
+	public TorchModeAdapter(final Context context, final Bundle bundle) {
 		mContext = context;
+		mSettingsManager = new SettingsManager(context);
+
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mTimerValues = mContext.getResources()
 				.getIntArray(R.array.timer_values);
-		mTimerValuesAdapter = new ArrayAdapter<>(mContext,
+		mTimerValuesAdapter = new ArrayAdapter<String>(mContext,
 				android.R.layout.simple_spinner_item);
 		for (int i = 0; i < mTimerValues.length; i++) {
 			mTimerValuesAdapter.add(Utils.formatTimerTime(mContext,
@@ -45,21 +50,20 @@ public class TorchModeAdapter extends BaseAdapter {
 		mTimerValuesAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-		// TODO: 02. remove this hardcode
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
-				.setTimeoutSec(0));
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(true)
-				.setTimeoutSec(5));
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
-				.setTimeoutSec(15));
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(true)
-				.setTimeoutSec(30));
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
-				.setTimeoutSec(60));
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(true)
-				.setTimeoutSec(120));
-		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
-				.setTimeoutSec(300));
+		if (bundle != null) {
+			mTorchModes = new TorchModes(bundle);
+		} else {
+			mTorchModes = new TorchModes();
+		}
+	}
+
+	/**
+	 * Constructor, reads modes from settings
+	 */
+	public TorchModeAdapter(final Context context) {
+		this(context, null);
+
+		mTorchModes = mSettingsManager.readTorchModes();
 	}
 
 	@Override
@@ -137,8 +141,8 @@ public class TorchModeAdapter extends BaseAdapter {
 
 		timePicker.setSelection(selectedTimePosition, false);
 
-		// TODO: 00. Do we support drag'n'drop?
-		// TODO: 00. What should i pass as tmp?!
+		// TODO: 02. Do we support drag'n'drop?
+		// TODO: 02. What should i pass as tmp?!
 		final String tmp = "";
 		view.setOnLongClickListener(new OnLongClickListener() {
 			@Override
@@ -179,5 +183,13 @@ public class TorchModeAdapter extends BaseAdapter {
 			}
 		});
 		return view;
+	}
+
+	public Bundle getTorchModesBundle() {
+		return mTorchModes.getBundle();
+	}
+
+	public void saveTorchModes() {
+		mSettingsManager.writeTorchModes(mTorchModes);
 	}
 }

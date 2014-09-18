@@ -1,8 +1,5 @@
 package com.greenlog.smarttorch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,20 +20,19 @@ public class StackViewService extends RemoteViewsService {
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 	private final Context mContext;
 
-	private final List<TorchMode> mTorchModes = new ArrayList<TorchMode>();
+	private final TorchModes mTorchModes;
+
+	private final SettingsManager mSettingsManager;
 
 	public StackRemoteViewsFactory(final Context context, final Intent intent) {
 		mContext = context;
+		mSettingsManager = new SettingsManager(context);
+
+		mTorchModes = mSettingsManager.readTorchModes();
 	}
 
 	@Override
 	public void onCreate() {
-		Log.v("sss", "onCreate");
-		// TODO: 02. remove this hardcode
-		for (int i = 0; i < 20; i++) {
-			mTorchModes.add((new TorchMode()).setShakeSensorEnabled(i % 2 == 0)
-					.setTimeoutSec(i * 10));
-		}
 	}
 
 	@Override

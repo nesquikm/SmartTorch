@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.StackView;
 
-// TODO: 00. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
+// TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
 // TODO: 01. Trash can with animation
 // TODO: 01. Create new mode button with animation
@@ -16,15 +16,17 @@ import android.widget.StackView;
 // TODO: 02. Show toast with "you always can double click to configure SmartTorch widget" 
 
 public class SmartTorchWidgetConfigure extends Activity {
+	private final static String BUNDLE_KEY_TORCH_MODES = "com.greenlog.smarttorch.TORCH_MODES";
+
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
+	private TorchModeAdapter mTorchModeAdapter;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setResult(RESULT_CANCELED);
-		// if (savedInstanceState == null) {
 		setContentView(R.layout.configure_activity);
-		// }
 
 		// Find the widget id from the intent.
 		final Intent intent = getIntent();
@@ -44,6 +46,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
+				mTorchModeAdapter.saveTorchModes();
+				// 00. UPDATE ALL WIDGETS HERE!
 				final Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 						mAppWidgetId);
@@ -53,7 +57,19 @@ public class SmartTorchWidgetConfigure extends Activity {
 		});
 
 		final StackView stackView = (StackView) findViewById(R.id.stack_view);
-		stackView.setAdapter(new TorchModeAdapter(this));
+		if (savedInstanceState != null) {
+			mTorchModeAdapter = new TorchModeAdapter(this,
+					savedInstanceState.getBundle(BUNDLE_KEY_TORCH_MODES));
+		} else {
+			mTorchModeAdapter = new TorchModeAdapter(this);
+		}
+		stackView.setAdapter(mTorchModeAdapter);
 	}
 
+	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBundle(BUNDLE_KEY_TORCH_MODES,
+				mTorchModeAdapter.getTorchModesBundle());
+	}
 }

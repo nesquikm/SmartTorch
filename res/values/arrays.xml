@@ -9,6 +9,12 @@
         <item>60</item>
         <item>120</item>
         <item>300</item>
-        </integer-array>
+    </integer-array>
+
+    <string-array name="default_modes">
+        <item>0,false</item>
+        <item>15,true</item>
+        <item>60,false</item>
+        </string-array>
 
 </resources>

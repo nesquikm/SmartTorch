@@ -3,7 +3,8 @@ package com.greenlog.smarttorch;
 import android.os.Bundle;
 
 public class TorchMode {
-	private final static String BUNDLE_PREFIX = "com.greenlog.smarttorch.";
+	private final static String BUNDLE_KEY_IS_SHAKE_SENSOR_ENABLED = "com.greenlog.smarttorch.IS_SHAKE_SENSOR_ENABLED";
+	private final static String BUNDLE_KEY_TIMEOUT_SEC = "com.greenlog.smarttorch.TIMEOUT_SEC";
 	private boolean mIsShakeSensorEnabled = false;
 	private int mTimeoutSec = 0;
 
@@ -44,15 +45,15 @@ public class TorchMode {
 
 	public Bundle getBundle() {
 		final Bundle bundle = new Bundle();
-		bundle.putBoolean(BUNDLE_PREFIX + "mIsShakeSensorEnabled",
+		bundle.putInt(BUNDLE_KEY_TIMEOUT_SEC, mTimeoutSec);
+		bundle.putBoolean(BUNDLE_KEY_IS_SHAKE_SENSOR_ENABLED,
 				mIsShakeSensorEnabled);
-		bundle.putInt(BUNDLE_PREFIX + "mTimeoutSec", mTimeoutSec);
 		return bundle;
 	}
 
 	public TorchMode(final Bundle bundle) {
-		mIsShakeSensorEnabled = bundle.getBoolean(BUNDLE_PREFIX
-				+ "mIsShakeSensorEnabled", false);
-		mTimeoutSec = bundle.getInt(BUNDLE_PREFIX + "mTimeoutSec", -1);
+		mTimeoutSec = bundle.getInt(BUNDLE_KEY_TIMEOUT_SEC, -1);
+		mIsShakeSensorEnabled = bundle.getBoolean(
+				BUNDLE_KEY_IS_SHAKE_SENSOR_ENABLED, false);
 	}
 }

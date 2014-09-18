@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-// TODO: 01. android:configure="com.example.android.ExampleAppWidgetConfigure"
 // TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes
 // TODO: 04. set as large as possible large icon for lockscreen
