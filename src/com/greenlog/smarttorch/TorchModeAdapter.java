@@ -13,24 +13,53 @@ import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Spinner;
 
 public class TorchModeAdapter extends BaseAdapter {
 	private final List<TorchMode> mTorchModes = new ArrayList<TorchMode>();
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
+	private final int[] mTimerValues;
+	private final ArrayAdapter<String> mTimerValuesAdapter;
 
 	public TorchModeAdapter(final Context context) {
 		mContext = context;
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		// TODO: 02. remove this hardcode
-		for (int i = 0; i < 20; i++) {
-			mTorchModes.add((new TorchMode()).setShakeSensorEnabled(i % 2 == 0)
-					.setTimeoutSec(i * 10));
+
+		mTimerValues = mContext.getResources()
+				.getIntArray(R.array.timer_values);
+		mTimerValuesAdapter = new ArrayAdapter<>(mContext,
+				android.R.layout.simple_spinner_item);
+		for (int i = 0; i < mTimerValues.length; i++) {
+			mTimerValuesAdapter.add(Utils.formatTimerTime(mContext,
+					mTimerValues[i], true));
 		}
+		mTimerValuesAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		// TODO: 02. remove this hardcode
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
+				.setTimeoutSec(0));
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(true)
+				.setTimeoutSec(5));
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
+				.setTimeoutSec(15));
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(true)
+				.setTimeoutSec(30));
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
+				.setTimeoutSec(60));
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(true)
+				.setTimeoutSec(120));
+		mTorchModes.add((new TorchMode()).setShakeSensorEnabled(false)
+				.setTimeoutSec(300));
 	}
 
 	@Override
@@ -61,12 +90,54 @@ public class TorchModeAdapter extends BaseAdapter {
 
 		final TorchMode torchMode = getItem(position);
 
-		((TextView) view.findViewById(R.id.stackview_item_text)).setText(Utils
-				.formatTimerTime(mContext, torchMode.getTimeoutSec(), true));
-		((ImageView) view.findViewById(R.id.stackview_item_icon))
-				.setVisibility(torchMode.isShakeSensorEnabled() ? View.VISIBLE
-						: View.GONE);
+		final CheckBox shakeCheckbox = (CheckBox) view
+				.findViewById(R.id.shake_checkbox);
+		shakeCheckbox.setChecked(torchMode.isShakeSensorEnabled());
 
+		shakeCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(final CompoundButton buttonView,
+					final boolean isChecked) {
+				// save the selected state
+				torchMode.setShakeSensorEnabled(isChecked);
+			}
+		});
+
+		final Spinner timePicker;
+		timePicker = (Spinner) view.findViewById(R.id.time_picker);
+		// do it only once
+		if (convertView == null) {
+			timePicker.setAdapter(mTimerValuesAdapter);
+
+			timePicker.setOnItemSelectedListener(new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(final AdapterView<?> parent,
+						final View view, final int position, final long id) {
+					// hide shakeCheckbox when timer == infinity
+					shakeCheckbox
+							.setVisibility((mTimerValues[position] == 0) ? View.INVISIBLE
+									: View.VISIBLE);
+					// save the selected timeout
+					torchMode.setTimeoutSec(mTimerValues[position]);
+				}
+
+				@Override
+				public void onNothingSelected(final AdapterView<?> parent) {
+				}
+			});
+		}
+
+		int selectedTimePosition = 0;
+		for (int i = 0; i < mTimerValues.length; i++) {
+			if (mTimerValues[i] == torchMode.getTimeoutSec()) {
+				selectedTimePosition = i;
+				break;
+			}
+		}
+
+		timePicker.setSelection(selectedTimePosition, false);
+
+		// TODO: 00. Do we support drag'n'drop?
 		// TODO: 00. What should i pass as tmp?!
 		final String tmp = "";
 		view.setOnLongClickListener(new OnLongClickListener() {

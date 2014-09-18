@@ -3,21 +3,25 @@
     android:layout_width="210dp"
     android:layout_height="210dp"
     android:background="@drawable/back_off"
-    android:orientation="vertical"
-    android:gravity="center_horizontal" >
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/stackview_item_text"
+    <Spinner
+        android:layout_marginTop="30dp"
+        android:id="@+id/time_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff000000"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-    
-    <ImageView 
-        android:id="@+id/stackview_item_icon"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:src="@drawable/shake"/>
+        android:spinnerMode="dropdown"
+        android:maxWidth="120dp" />
+
+    <CheckBox
+        android:layout_marginTop="16dp"
+        android:id="@+id/shake_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="120dp"
+        android:gravity="center_vertical"
+        android:drawableLeft="@drawable/shake"
+        />
 
 </LinearLayout>

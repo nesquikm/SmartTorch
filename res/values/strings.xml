@@ -20,5 +20,7 @@
     </plurals>
     
     <string name="cant_turn_on">Can\'t turn on the torch now</string>
+    
+    <string name="configure_until_stop_shaking">shake sensor</string>
 
 </resources>
