@@ -47,7 +47,12 @@ public class SmartTorchWidgetConfigure extends Activity {
 			@Override
 			public void onClick(final View v) {
 				mTorchModeAdapter.saveTorchModes();
-				// 00. UPDATE ALL WIDGETS HERE!
+				// Update ALL widgets config!
+				SmartTorchService.sendCommandToService(
+						SmartTorchWidgetConfigure.this,
+						SmartTorchService.SERVICE_ACTION_UPDATE_WIDGETS_CONFIG,
+						null);
+
 				final Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 						mAppWidgetId);

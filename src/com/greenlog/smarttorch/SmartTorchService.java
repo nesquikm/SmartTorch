@@ -19,6 +19,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
@@ -32,6 +33,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	public static final String SERVICE_ACTION_TURN_ON = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_ON";
 	public static final String SERVICE_ACTION_TURN_OFF = "com.greenlog.smarttorch.SERVICE_ACTION_TURN_OFF";
 	public static final String SERVICE_ACTION_UPDATE_WIDGETS = "com.greenlog.smarttorch.SERVICE_ACTION_UPDATE_WIDGETS";
+	public static final String SERVICE_ACTION_UPDATE_WIDGETS_CONFIG = "com.greenlog.smarttorch.SERVICE_ACTION_UPDATE_WIDGETS_CONFIG";
 
 	private static final int NOTIFY_ID = 1;
 
@@ -109,8 +111,21 @@ public class SmartTorchService extends Service implements SensorEventListener {
 				stopSelf();
 			}
 			break;
+		case SERVICE_ACTION_UPDATE_WIDGETS_CONFIG:
+			updateWidgetsConfig();
+			break;
 		}
 		return START_NOT_STICKY;
+	}
+
+	public static void sendCommandToService(final Context context,
+			final String command, final Bundle extras) {
+		final Intent serviceIntent = new Intent(context,
+				SmartTorchService.class);
+		serviceIntent.setAction(command);
+		if (extras != null)
+			serviceIntent.putExtras(extras);
+		context.startService(serviceIntent);
 	}
 
 	@Override
@@ -248,6 +263,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 				.getAppWidgetIds(new ComponentName(this, SmartTorchWidget.class));
 
 		for (int i = 0; i < appWidgetIds.length; ++i) {
+			Log.v("sss", "!!!!!!!!!!! update widget " + i);
 			final Intent intent = new Intent(this, StackViewService.class);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 					appWidgetIds[i]);
@@ -286,6 +302,17 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			}
 			appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
 		}
+	}
+
+	private void updateWidgetsConfig() {
+		final AppWidgetManager appWidgetManager = AppWidgetManager
+				.getInstance(this);
+
+		final int[] appWidgetIds = appWidgetManager
+				.getAppWidgetIds(new ComponentName(this, SmartTorchWidget.class));
+
+		appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,
+				R.id.stack_view);
 	}
 
 	private void startSensor() {

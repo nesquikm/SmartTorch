@@ -20,7 +20,7 @@ public class StackViewService extends RemoteViewsService {
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 	private final Context mContext;
 
-	private final TorchModes mTorchModes;
+	private TorchModes mTorchModes;
 
 	private final SettingsManager mSettingsManager;
 
@@ -37,6 +37,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 	@Override
 	public void onDataSetChanged() {
+		mTorchModes = mSettingsManager.readTorchModes();
 	}
 
 	@Override

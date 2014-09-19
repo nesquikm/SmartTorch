@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 // TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes
@@ -23,12 +22,12 @@ public class SmartTorchWidget extends AppWidgetProvider {
 	public void onReceive(final Context context, final Intent intent) {
 		switch (intent.getAction()) {
 		case CLICK_ACTION_LED_ON:
-			sendCommandToService(context,
+			SmartTorchService.sendCommandToService(context,
 					SmartTorchService.SERVICE_ACTION_TURN_ON,
 					intent.getExtras());
 			break;
 		case CLICK_ACTION_LED_OFF:
-			sendCommandToService(context,
+			SmartTorchService.sendCommandToService(context,
 					SmartTorchService.SERVICE_ACTION_TURN_OFF, null);
 			break;
 		}
@@ -39,18 +38,8 @@ public class SmartTorchWidget extends AppWidgetProvider {
 	@Override
 	public void onUpdate(final Context context,
 			final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
-		sendCommandToService(context,
+		SmartTorchService.sendCommandToService(context,
 				SmartTorchService.SERVICE_ACTION_UPDATE_WIDGETS, null);
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-	}
-
-	private void sendCommandToService(final Context context,
-			final String command, final Bundle extras) {
-		final Intent serviceIntent = new Intent(context,
-				SmartTorchService.class);
-		serviceIntent.setAction(command);
-		if (extras != null)
-			serviceIntent.putExtras(extras);
-		context.startService(serviceIntent);
 	}
 }
