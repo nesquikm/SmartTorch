@@ -18,29 +18,33 @@ import android.os.Handler;
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";
 	public static final String CLICK_ACTION_LED_OFF = "com.greenlog.smarttorch.CLICK_ACTION_LED_OFF";
-	public static final String CLICK_ACTION_TORCH_MODE = "com.greenlog.smarttorch.CLICK_ACTION_TORCH_MODE";
 
 	private static ClickCatchRunnable mClickCatchRunnable = null;
 
 	@Override
 	public void onReceive(final Context context, final Intent intent) {
-		// is it double click?
-		if (mClickCatchRunnable == null) {
-			mClickCatchRunnable = new ClickCatchRunnable(context,
-					intent.getAction(), intent.getExtras());
-			(new Handler()).postDelayed(mClickCatchRunnable, 500);
-		} else {
-			mClickCatchRunnable.cancel();
-			mClickCatchRunnable = null;
-			SmartTorchService.sendCommandToService(context,
-					SmartTorchService.SERVICE_ACTION_TURN_OFF, null);
+		switch (intent.getAction()) {
+		case CLICK_ACTION_LED_ON:
+		case CLICK_ACTION_LED_OFF:
+			// is it double click?
+			if (mClickCatchRunnable == null) {
+				mClickCatchRunnable = new ClickCatchRunnable(context,
+						intent.getAction(), intent.getExtras());
+				(new Handler()).postDelayed(mClickCatchRunnable, 500);
+			} else {
+				mClickCatchRunnable.cancel();
+				mClickCatchRunnable = null;
+				SmartTorchService.sendCommandToService(context,
+						SmartTorchService.SERVICE_ACTION_TURN_OFF, null);
 
-			// start configure activity
-			final Intent configureActivityIntent = new Intent(context,
-					SmartTorchWidgetConfigure.class);
-			configureActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			configureActivityIntent.putExtras(intent.getExtras());
-			context.startActivity(configureActivityIntent);
+				// start configure activity
+				final Intent configureActivityIntent = new Intent(context,
+						SmartTorchWidgetConfigure.class);
+				configureActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				configureActivityIntent.putExtras(intent.getExtras());
+				context.startActivity(configureActivityIntent);
+			}
+			break;
 		}
 
 		super.onReceive(context, intent);
