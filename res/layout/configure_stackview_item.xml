@@ -2,7 +2,7 @@
     android:id="@+id/stackview_item"
     android:layout_width="210dp"
     android:layout_height="210dp"
-    android:background="@drawable/back_off"
+    android:background="@drawable/big_back_off"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 

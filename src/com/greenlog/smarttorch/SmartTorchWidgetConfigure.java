@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.StackView;
 import android.widget.Toast;
 
-// TODO: 00. Double-tap on the widget call configure activity
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
 // TODO: 01. Trash can with animation
