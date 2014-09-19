@@ -85,6 +85,17 @@ public class SmartTorchWidgetConfigure extends Activity {
 				stackView.setSelection(position);
 			}
 		}
+
+		final SmartButton trashButton = (SmartButton) findViewById(R.id.trash_button);
+		final SmartButton addButton = (SmartButton) findViewById(R.id.add_button);
+
+		addButton.setClickable(true);
+		addButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				trashButton.setEnabled(!trashButton.isEnabled());
+			}
+		});
 	}
 
 	@Override

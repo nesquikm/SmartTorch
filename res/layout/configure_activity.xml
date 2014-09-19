@@ -1,9 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/widget_background"
-    android:padding="8dp" >
-    >
+    android:background="@drawable/widget_background" >
 
     <StackView
         android:id="@+id/stack_view"
@@ -29,6 +27,7 @@
         android:layout_height="80dp"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/stack_view"
+        android:padding="8dp"
         android:src="@drawable/trash" />
 
     <com.greenlog.smarttorch.SmartButton
@@ -38,6 +37,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/stack_view"
+        android:padding="8dp"
         android:src="@drawable/add" />
 
 </RelativeLayout>

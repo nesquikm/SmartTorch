@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
+// TODO: animate on first appear
+// TODO: save state on recreate (orientation change)
 public class SmartButton extends ImageView {
 	private boolean mIsDown = false;
 
@@ -24,22 +26,32 @@ public class SmartButton extends ImageView {
 
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			setDown(true);
-			break;
-		case MotionEvent.ACTION_CANCEL:
-		case MotionEvent.ACTION_UP:
-			setDown(false);
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (event.getX() < 0 || event.getY() < 0
-					|| event.getX() > getWidth() || event.getY() > getHeight()) {
+		if (isEnabled()) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				setDown(true);
+				break;
+			case MotionEvent.ACTION_CANCEL:
+			case MotionEvent.ACTION_UP:
+				if (mIsDown) {
+					performClick();
+				}
 				setDown(false);
+				break;
+			case MotionEvent.ACTION_MOVE:
+				if (!isEventInView(event)) {
+					setDown(false);
+				}
+				break;
 			}
-			break;
+			// super.onTouchEvent(event);
 		}
 		return true;
+	}
+
+	private boolean isEventInView(final MotionEvent event) {
+		return (event.getX() >= 0 && event.getY() >= 0
+				&& event.getX() < getWidth() && event.getY() < getHeight());
 	}
 
 	private void setDown(final boolean isDown) {
@@ -60,6 +72,20 @@ public class SmartButton extends ImageView {
 				invalidate();
 			}
 		}
+	}
+
+	@Override
+	public void setEnabled(final boolean enabled) {
+		if (enabled != isEnabled()) {
+			if (enabled) {
+				animate().translationX(0);
+			} else {
+				// Shift right
+				animate().translationXBy(
+						getResources().getDisplayMetrics().widthPixels);
+			}
+		}
+		super.setEnabled(enabled);
 	}
 
 }
