@@ -54,13 +54,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 				R.layout.stackview_item);
 
 		final TorchMode torchMode = getItem(position);
-		String itemText;
-		if (torchMode.isInfinitely()) {
-			itemText = mContext.getString(R.string.infinity);
-		} else {
-			itemText = torchMode.getTimeoutSec()
-					+ mContext.getString(R.string.widget_seconds);
-		}
+
 		rv.setTextViewText(R.id.stackview_item_text, Utils.formatTimerTime(
 				mContext, torchMode.getTimeoutSec(), true));
 		rv.setViewVisibility(R.id.stackview_item_icon,
