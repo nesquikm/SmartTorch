@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.StackView;
+import android.widget.Toast;
 
+// TODO: 00. Double-tap on the widget call configure activity
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
 // TODO: 01. Trash can with animation
@@ -36,12 +38,6 @@ public class SmartTorchWidgetConfigure extends Activity {
 					AppWidgetManager.INVALID_APPWIDGET_ID);
 		}
 
-		// If they gave us an intent without the widget id, just bail.
-		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-			// TODO: 0. uncomment this!
-			// finish();
-		}
-
 		final Button saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -53,10 +49,16 @@ public class SmartTorchWidgetConfigure extends Activity {
 						SmartTorchService.SERVICE_ACTION_UPDATE_WIDGETS_CONFIG,
 						null);
 
-				final Intent resultValue = new Intent();
-				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-						mAppWidgetId);
-				setResult(RESULT_OK, resultValue);
+				if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+					final Intent resultValue = new Intent();
+					resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+							mAppWidgetId);
+					setResult(RESULT_OK, resultValue);
+
+					Toast.makeText(SmartTorchWidgetConfigure.this,
+							R.string.double_click_to_configure,
+							Toast.LENGTH_SHORT).show();
+				}
 				finish();
 			}
 		});
