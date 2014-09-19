@@ -33,10 +33,16 @@ public class SmartTorchWidgetConfigure extends Activity {
 		// Find the widget id from the intent.
 		final Intent intent = getIntent();
 		final Bundle extras = intent.getExtras();
+		TorchMode torchMode = null;
 		if (extras != null) {
 			mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
 					AppWidgetManager.INVALID_APPWIDGET_ID);
+			if (TorchMode.isTorchModePresents(extras)) {
+				torchMode = new TorchMode(extras);
+			}
 		}
+
+		final boolean isCreateFromExistingWidget = (torchMode != null);
 
 		final Button saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +55,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 						SmartTorchService.SERVICE_ACTION_UPDATE_WIDGETS_CONFIG,
 						null);
 
-				if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+				// when creating NOT from existing widget
+				if (!isCreateFromExistingWidget) {
 					final Intent resultValue = new Intent();
 					resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 							mAppWidgetId);
@@ -70,7 +77,15 @@ public class SmartTorchWidgetConfigure extends Activity {
 		} else {
 			mTorchModeAdapter = new TorchModeAdapter(this);
 		}
+
+		// show selected on widget mode
 		stackView.setAdapter(mTorchModeAdapter);
+		if (torchMode != null) {
+			final int position = mTorchModeAdapter.findPosition(torchMode);
+			if (position >= 0) {
+				stackView.setSelection(position);
+			}
+		}
 	}
 
 	@Override

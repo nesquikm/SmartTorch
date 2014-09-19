@@ -22,7 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -63,7 +62,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onCreate() {
-		Log.v("sss", "SmartTorchService onCreate");
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -77,7 +75,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onDestroy() {
-		Log.v("sss", "SmartTorchService onDestroy");
 		stopSensor();
 		stopTimer();
 		turnLed(false);
@@ -138,7 +135,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		if (isOn == mIsLedOn)
 			return;
 
-		Log.v("sss", "SmartTorchService turnLed " + mIsLedOn);
 		final boolean oldIsLedOn = mIsLedOn;
 		mIsLedOn = isOn;
 		updateWidgets();
@@ -254,8 +250,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@SuppressWarnings("deprecation")
 	private void updateWidgets() {
-		Log.v("sss", "SmartTorchService updateWidgets " + mIsLedOn);
-
 		final AppWidgetManager appWidgetManager = AppWidgetManager
 				.getInstance(this);
 
@@ -263,7 +257,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 				.getAppWidgetIds(new ComponentName(this, SmartTorchWidget.class));
 
 		for (int i = 0; i < appWidgetIds.length; ++i) {
-			Log.v("sss", "!!!!!!!!!!! update widget " + i);
 			final Intent intent = new Intent(this, StackViewService.class);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 					appWidgetIds[i]);
@@ -316,7 +309,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	}
 
 	private void startSensor() {
-		Log.v("sss", "@@@ startSensor");
 		if (mTorchMode.isInfinitely() || !mTorchMode.isShakeSensorEnabled()) {
 			return;
 		}
@@ -325,7 +317,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	}
 
 	private void stopSensor() {
-		Log.v("sss", "@@@ stopSensor");
 		mSensorManager.unregisterListener(this);
 	}
 
@@ -346,16 +337,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			if (mIsShaking)
 				break;
 		}
-		// Log.v("sss",
-		// "@@@ dx "
-		// + Math.round(10000 * Math.abs(mAccelerationSlow[0]
-		// - mAccelerationFast[0]))
-		// + " dy "
-		// + +Math.round(10000 * Math.abs(mAccelerationSlow[1]
-		// - mAccelerationFast[1]))
-		// + " dz "
-		// + +Math.round(10000 * Math.abs(mAccelerationSlow[2]
-		// - mAccelerationFast[2])));
 	}
 
 	@Override
@@ -378,7 +359,5 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			accuracyString = "unreliable";
 			break;
 		}
-		Log.v("sss", "onAccuracyChanged " + sensor.getName() + " accuracy "
-				+ accuracyString);
 	}
 }

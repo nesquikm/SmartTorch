@@ -3,7 +3,6 @@ package com.greenlog.smarttorch;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -11,7 +10,6 @@ import android.widget.RemoteViewsService;
 public class StackViewService extends RemoteViewsService {
 	@Override
 	public RemoteViewsFactory onGetViewFactory(final Intent intent) {
-		Log.v("sss", "onGetViewFactory");
 		return new StackRemoteViewsFactory(getApplicationContext(), intent);
 	}
 

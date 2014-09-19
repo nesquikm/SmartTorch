@@ -192,4 +192,8 @@ public class TorchModeAdapter extends BaseAdapter {
 	public void saveTorchModes() {
 		mSettingsManager.writeTorchModes(mTorchModes);
 	}
+
+	public int findPosition(final TorchMode torchMode) {
+		return mTorchModes.indexOf(torchMode);
+	}
 }
