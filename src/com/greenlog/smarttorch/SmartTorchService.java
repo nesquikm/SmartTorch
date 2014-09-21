@@ -119,6 +119,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			final String command, final Bundle extras) {
 		final Intent serviceIntent = new Intent(context,
 				SmartTorchService.class);
+
 		serviceIntent.setAction(command);
 		if (extras != null)
 			serviceIntent.putExtras(extras);

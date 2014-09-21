@@ -96,7 +96,6 @@ public class TorchCamera {
 			}
 			removeOverlay();
 		}
-
 		return true;
 	}
 

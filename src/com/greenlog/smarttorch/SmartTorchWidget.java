@@ -10,6 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
+// TODO: 00. First light on, later -- check for doubleclick, for eliminate f*king delay!!!!
+// TODO: why service stay on after config activity shown?
+
 // TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes
 // TODO: 04. set as large as possible large icon for lockscreen
@@ -21,7 +24,7 @@ import android.os.Handler;
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";
 	public static final String CLICK_ACTION_LED_OFF = "com.greenlog.smarttorch.CLICK_ACTION_LED_OFF";
-	private static final long DOUBLE_CLICK_DELAY_MILLIS = 500;
+	private static final long DOUBLE_CLICK_DELAY_MILLIS = 300;
 
 	private static ClickCatchRunnable mClickCatchRunnable = null;
 
@@ -30,7 +33,8 @@ public class SmartTorchWidget extends AppWidgetProvider {
 		switch (intent.getAction()) {
 		case CLICK_ACTION_LED_ON:
 		case CLICK_ACTION_LED_OFF: {
-			// If command from keyguard widget, do not try to check doubleclick
+			// If command comes from keyguard widget, do not try to catch
+			// doubleclick
 			if (isKeyguard(context, intent)) {
 				processCommand(context, intent.getAction(), intent.getExtras());
 			} else {
@@ -42,7 +46,6 @@ public class SmartTorchWidget extends AppWidgetProvider {
 							DOUBLE_CLICK_DELAY_MILLIS);
 				} else {
 					mClickCatchRunnable.cancel();
-					mClickCatchRunnable = null;
 					SmartTorchService.sendCommandToService(context,
 							SmartTorchService.SERVICE_ACTION_TURN_OFF, null);
 
@@ -121,6 +124,7 @@ public class SmartTorchWidget extends AppWidgetProvider {
 
 		public void cancel() {
 			mIsCancelled = true;
+			mClickCatchRunnable = null;
 		}
 
 		@Override
