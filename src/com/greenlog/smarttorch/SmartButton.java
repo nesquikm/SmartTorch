@@ -26,6 +26,8 @@ public class SmartButton extends ImageView {
 
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
+		if (!isEnabled())
+			return true;
 		if (isEnabled()) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
@@ -80,6 +82,8 @@ public class SmartButton extends ImageView {
 			if (enabled) {
 				animate().translationX(0);
 			} else {
+				setDown(false);
+				SmartButton.super.setEnabled(true);
 				// Shift right
 				animate().translationXBy(
 						getResources().getDisplayMetrics().widthPixels);
@@ -87,5 +91,4 @@ public class SmartButton extends ImageView {
 		}
 		super.setEnabled(enabled);
 	}
-
 }

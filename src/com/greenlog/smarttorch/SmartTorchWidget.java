@@ -10,8 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-// TODO: 00. First light on, later -- check for doubleclick, for eliminate f*king delay!!!!
-// TODO: why service stay on after config activity shown?
+// TODO: 00. why service stay on after config activity shown?
 
 // TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes

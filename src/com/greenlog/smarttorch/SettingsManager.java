@@ -3,7 +3,6 @@ package com.greenlog.smarttorch;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.util.Log;
 
 // TODO: 09. Test with clean configuration
 
@@ -14,6 +13,7 @@ public class SettingsManager {
 	private static final String TORCH_MODE_COUNT = "torch_mode_count";
 	private static final String TORCH_MODE_TIMEOUT = "torch_mode_timeout_";
 	private static final String TORCH_MODE_SHAKE_SENSOR_ENABLED = "shake_sensor_enabled_";
+	public final static int MAX_MODE_COUNT = 5;
 
 	private final Context mContext;
 	private final SharedPreferences mSharedPreferences;
@@ -65,22 +65,14 @@ public class SettingsManager {
 			final String modes[] = resources
 					.getStringArray(R.array.default_modes);
 			for (int i = 0; i < modes.length; i++) {
-				final String[] substrings = modes[i].split(",");
-				if (substrings.length != 2) {
-					Log.w(TAG, "checkTorchModes: wrong field count in mode: "
-							+ modes[i]);
-					continue;
-				}
-				final TorchMode torchMode = new TorchMode();
-				try {
-					torchMode.setTimeoutSec(Integer.parseInt(substrings[0]));
-					torchMode.setShakeSensorEnabled(Boolean
-							.parseBoolean(substrings[1]));
+				final TorchMode torchMode = TorchMode.fromString(modes[i]);
+				if (torchMode != null) {
 					torchModes.add(torchMode);
-				} catch (final NumberFormatException e) {
-					Log.w(TAG, "checkTorchModes: can't parse mode fields: "
-							+ modes[i]);
 				}
+			}
+		} else {
+			while (torchModes.size() > MAX_MODE_COUNT) {
+				torchModes.remove(torchModes.size() - 1);
 			}
 		}
 	}

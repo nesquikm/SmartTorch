@@ -37,7 +37,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/stack_view"
-        android:padding="8dp"
-        android:src="@drawable/add" />
+        android:src="@drawable/add"
+        android:padding="8dp" />
 
 </RelativeLayout>

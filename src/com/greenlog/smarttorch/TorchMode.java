@@ -1,8 +1,10 @@
 package com.greenlog.smarttorch;
 
 import android.os.Bundle;
+import android.util.Log;
 
 public class TorchMode {
+	private static final String TAG = TorchMode.class.getSimpleName();
 	private final static String BUNDLE_KEY_TORCH_MODE_PRESENTS = "com.greenlog.smarttorch.TORCH_MODE_PRESENTS";
 	private final static String BUNDLE_KEY_IS_SHAKE_SENSOR_ENABLED = "com.greenlog.smarttorch.IS_SHAKE_SENSOR_ENABLED";
 	private final static String BUNDLE_KEY_TIMEOUT_SEC = "com.greenlog.smarttorch.TIMEOUT_SEC";
@@ -86,5 +88,23 @@ public class TorchMode {
 		if (mTimeoutSec != other.mTimeoutSec)
 			return false;
 		return true;
+	}
+
+	public static TorchMode fromString(final String string) {
+		final String[] substrings = string.split(",");
+		if (substrings.length != 2) {
+			Log.w(TAG, "fromString: wrong field count in mode: " + string);
+			return null;
+		}
+		final TorchMode torchMode = new TorchMode();
+		try {
+			torchMode.setTimeoutSec(Integer.parseInt(substrings[0]));
+			torchMode
+					.setShakeSensorEnabled(Boolean.parseBoolean(substrings[1]));
+			return torchMode;
+		} catch (final NumberFormatException e) {
+			Log.w(TAG, "checkTorchModes: can't parse mode fields: " + string);
+		}
+		return null;
 	}
 }

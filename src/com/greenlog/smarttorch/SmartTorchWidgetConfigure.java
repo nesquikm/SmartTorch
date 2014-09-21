@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.StackView;
 import android.widget.Toast;
 
+// TODO: 00. Add/remove animations
+// TODO: 00. Fast add/remove tests
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
 // TODO: 01. Trash can with animation
@@ -22,6 +24,9 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
 	private TorchModeAdapter mTorchModeAdapter;
+
+	private SmartButton mTrashButton;
+	private SmartButton mAddButton;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -86,16 +91,39 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		}
 
-		final SmartButton trashButton = (SmartButton) findViewById(R.id.trash_button);
-		final SmartButton addButton = (SmartButton) findViewById(R.id.add_button);
+		mTrashButton = (SmartButton) findViewById(R.id.trash_button);
+		mAddButton = (SmartButton) findViewById(R.id.add_button);
 
-		addButton.setClickable(true);
-		addButton.setOnClickListener(new View.OnClickListener() {
+		mTrashButton.setClickable(true);
+		mTrashButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				trashButton.setEnabled(!trashButton.isEnabled());
+				mTorchModeAdapter.remove(stackView.getDisplayedChild()
+						% mTorchModeAdapter.getCount());
+				setButtonsState();
 			}
 		});
+		mAddButton.setClickable(true);
+		mAddButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				final TorchMode torchMode = TorchMode
+						.fromString(getString(R.string.default_mode));
+				if (torchMode != null) {
+					mTorchModeAdapter.add(torchMode);
+					stackView.setDisplayedChild(mTorchModeAdapter.getCount() - 1);
+					setButtonsState();
+				}
+			}
+		});
+
+		setButtonsState();
+	}
+
+	private void setButtonsState() {
+		mTrashButton.setEnabled(mTorchModeAdapter.getCount() > 1);
+		mAddButton
+				.setEnabled(mTorchModeAdapter.getCount() < SettingsManager.MAX_MODE_COUNT);
 	}
 
 	@Override

@@ -15,6 +15,8 @@
         <item>0,false</item>
         <item>15,true</item>
         <item>60,false</item>
-        </string-array>
+    </string-array>
+
+    <string name="default_mode">5,true</string>
 
 </resources>

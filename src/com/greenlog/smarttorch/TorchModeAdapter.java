@@ -196,4 +196,14 @@ public class TorchModeAdapter extends BaseAdapter {
 	public int findPosition(final TorchMode torchMode) {
 		return mTorchModes.indexOf(torchMode);
 	}
+
+	public void add(final TorchMode torchMode) {
+		mTorchModes.add(torchMode);
+		notifyDataSetChanged();
+	}
+
+	public void remove(final int position) {
+		mTorchModes.remove(position);
+		notifyDataSetChanged();
+	}
 }
