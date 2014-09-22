@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -53,7 +52,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		}
 
-		final boolean isCreateFromExistingWidget = (torchMode != null);
+		final boolean isCreateFromExistingWidget = (!AppWidgetManager.ACTION_APPWIDGET_CONFIGURE
+				.equals(intent.getAction()));
 		final Button saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -209,19 +209,16 @@ public class SmartTorchWidgetConfigure extends Activity {
 		mFlyingTorch.animate().setListener(new AnimatorListener() {
 			@Override
 			public void onAnimationStart(final Animator animation) {
-				Log.v("sss", "--- start");
 				mFlyingTorchIsInAnimation = true;
 			}
 
 			@Override
 			public void onAnimationRepeat(final Animator animation) {
-				Log.v("sss", "--- repeat");
 				mFlyingTorchIsInAnimation = true;
 			}
 
 			@Override
 			public void onAnimationEnd(final Animator animation) {
-				Log.v("sss", "--- end " + (endAction != null));
 				if (endAction != null) {
 					endAction.run();
 				}
@@ -232,7 +229,6 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 			@Override
 			public void onAnimationCancel(final Animator animation) {
-				Log.v("sss", "--- cancel " + (endAction != null));
 				setButtonsState();
 				mFlyingTorchIsInAnimation = false;
 				mFlyingTorch.setVisibility(View.INVISIBLE);

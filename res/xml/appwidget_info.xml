@@ -6,6 +6,7 @@
     android:minWidth="40dp"
     android:resizeMode="none"
     android:updatePeriodMillis="0"
-    android:widgetCategory="home_screen|keyguard" >
+    android:widgetCategory="home_screen|keyguard"
+    android:previewImage="@drawable/widget_preview" >
 
 </appwidget-provider>
