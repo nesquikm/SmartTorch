@@ -1,43 +1,55 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/widget_background" >
+    android:layout_height="fill_parent" >
 
-    <StackView
-        android:id="@+id/stack_view"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:loopViews="true" >
-    </StackView>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/widget_background" >
 
-    <Button
-        android:id="@+id/save_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/stack_view"
-        android:layout_centerHorizontal="true"
-        android:text="@android:string/ok"
-        android:textColor="@android:color/white" />
+        <StackView
+            android:id="@+id/stack_view"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:loopViews="true" >
+        </StackView>
 
-    <com.greenlog.smarttorch.SmartButton
-        android:id="@+id/trash_button"
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/stack_view"
+            android:layout_centerHorizontal="true"
+            android:text="@android:string/ok"
+            android:textColor="@android:color/white" />
+
+        <com.greenlog.smarttorch.SmartButton
+            android:id="@+id/trash_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/stack_view"
+            android:padding="8dp"
+            android:src="@drawable/trash" />
+
+        <com.greenlog.smarttorch.SmartButton
+            android:id="@+id/add_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/stack_view"
+            android:padding="8dp"
+            android:src="@drawable/add" />
+    </RelativeLayout>
+
+    <ImageView 
+        android:id="@+id/flying_torch"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/stack_view"
-        android:padding="8dp"
-        android:src="@drawable/trash" />
+        android:src="@drawable/big_back_off"
+        android:visibility="invisible"/>
 
-    <com.greenlog.smarttorch.SmartButton
-        android:id="@+id/add_button"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/stack_view"
-        android:src="@drawable/add"
-        android:padding="8dp" />
-
-</RelativeLayout>
+</FrameLayout>

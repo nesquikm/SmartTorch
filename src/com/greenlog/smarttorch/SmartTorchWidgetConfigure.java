@@ -1,16 +1,19 @@
 package com.greenlog.smarttorch;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.StackView;
 import android.widget.Toast;
 
-// TODO: 00. Add/remove animations
-// TODO: 00. Fast add/remove tests
+// TODO: 00. StackView in and out animations
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
 // TODO: 01. Trash can with animation
@@ -25,8 +28,13 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 	private TorchModeAdapter mTorchModeAdapter;
 
+	private StackView mStackView;
 	private SmartButton mTrashButton;
 	private SmartButton mAddButton;
+
+	private ImageView mFlyingTorch;
+
+	private boolean mFlyingTorchIsInAnimation = false;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -74,7 +82,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		});
 
-		final StackView stackView = (StackView) findViewById(R.id.stack_view);
+		mStackView = (StackView) findViewById(R.id.stack_view);
 		if (savedInstanceState != null) {
 			mTorchModeAdapter = new TorchModeAdapter(this,
 					savedInstanceState.getBundle(BUNDLE_KEY_TORCH_MODES));
@@ -83,11 +91,11 @@ public class SmartTorchWidgetConfigure extends Activity {
 		}
 
 		// show selected on widget mode
-		stackView.setAdapter(mTorchModeAdapter);
+		mStackView.setAdapter(mTorchModeAdapter);
 		if (torchMode != null) {
 			final int position = mTorchModeAdapter.findPosition(torchMode);
 			if (position >= 0) {
-				stackView.setSelection(position);
+				mStackView.setSelection(position);
 			}
 		}
 
@@ -98,24 +106,38 @@ public class SmartTorchWidgetConfigure extends Activity {
 		mTrashButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				mTorchModeAdapter.remove(stackView.getDisplayedChild()
+				if (mFlyingTorchIsInAnimation) {
+					return;
+				}
+				moveFlyingTorchTo(mStackView, mTrashButton, null);
+				mTorchModeAdapter.remove(mStackView.getDisplayedChild()
 						% mTorchModeAdapter.getCount());
-				setButtonsState();
+				// setButtonsState();
 			}
 		});
 		mAddButton.setClickable(true);
 		mAddButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				final TorchMode torchMode = TorchMode
-						.fromString(getString(R.string.default_mode));
-				if (torchMode != null) {
-					mTorchModeAdapter.add(torchMode);
-					stackView.setDisplayedChild(mTorchModeAdapter.getCount() - 1);
-					setButtonsState();
+				if (mFlyingTorchIsInAnimation) {
+					return;
 				}
+				moveFlyingTorchTo(mAddButton, mStackView, new Runnable() {
+					@Override
+					public void run() {
+						final TorchMode torchMode = TorchMode
+								.fromString(getString(R.string.default_mode));
+						if (torchMode != null) {
+							mTorchModeAdapter.add(torchMode);
+							mStackView.setDisplayedChild(mTorchModeAdapter
+									.getCount() - 1);
+						}
+					}
+				});
 			}
 		});
+
+		mFlyingTorch = (ImageView) findViewById(R.id.flying_torch);
 
 		if (savedInstanceState == null) {
 			setButtonsAnimated(false);
@@ -150,5 +172,93 @@ public class SmartTorchWidgetConfigure extends Activity {
 		super.onSaveInstanceState(outState);
 		outState.putBundle(BUNDLE_KEY_TORCH_MODES,
 				mTorchModeAdapter.getTorchModesBundle());
+	}
+
+	private void moveFlyingTorchTo(final View from, final View to,
+			final Runnable endAction) {
+		class CalcFlyingTorchDimensions {
+			private final float mScale;
+			private final float mX;
+			private final float mY;
+
+			public CalcFlyingTorchDimensions(final View view) {
+				final ImageView flyingTorch = (ImageView) findViewById(R.id.flying_torch);
+				final float scaleX = (float) view.getHeight()
+						/ flyingTorch.getHeight();
+				final float scaleY = (float) view.getHeight()
+						/ flyingTorch.getHeight();
+				mScale = scaleX < scaleY ? scaleX : scaleY;
+
+				mX = view.getLeft() + view.getWidth() / 2f
+						- flyingTorch.getWidth() / 2f - flyingTorch.getLeft();
+				mY = view.getTop() + view.getHeight() / 2f
+						- flyingTorch.getHeight() / 2f - flyingTorch.getTop();
+			}
+
+			public float getScale() {
+				return mScale;
+			}
+
+			public float getX() {
+				return mX;
+			}
+
+			public float getY() {
+				return mY;
+			}
+		}
+
+		mFlyingTorch.animate().setListener(new AnimatorListener() {
+			@Override
+			public void onAnimationStart(final Animator animation) {
+				Log.v("sss", "--- start");
+				mFlyingTorchIsInAnimation = true;
+			}
+
+			@Override
+			public void onAnimationRepeat(final Animator animation) {
+				Log.v("sss", "--- repeat");
+				mFlyingTorchIsInAnimation = true;
+			}
+
+			@Override
+			public void onAnimationEnd(final Animator animation) {
+				Log.v("sss", "--- end " + (endAction != null));
+				if (endAction != null) {
+					endAction.run();
+				}
+				setButtonsState();
+				mFlyingTorchIsInAnimation = false;
+				mFlyingTorch.setVisibility(View.INVISIBLE);
+			}
+
+			@Override
+			public void onAnimationCancel(final Animator animation) {
+				Log.v("sss", "--- cancel " + (endAction != null));
+				setButtonsState();
+				mFlyingTorchIsInAnimation = false;
+				mFlyingTorch.setVisibility(View.INVISIBLE);
+			}
+		});
+
+		final CalcFlyingTorchDimensions fromDimensions = new CalcFlyingTorchDimensions(
+				from);
+
+		mFlyingTorch.setScaleX(fromDimensions.getScale());
+		mFlyingTorch.setScaleY(fromDimensions.getScale());
+		mFlyingTorch.setTranslationX(fromDimensions.getX());
+		mFlyingTorch.setTranslationY(fromDimensions.getY());
+		mFlyingTorch.setAlpha(1.0f);
+
+		mFlyingTorch.setVisibility(View.VISIBLE);
+
+		final CalcFlyingTorchDimensions toDimensions = new CalcFlyingTorchDimensions(
+				to);
+
+		mFlyingTorch.animate().scaleX(toDimensions.getScale())
+				.scaleY(toDimensions.getScale())
+				.translationX(toDimensions.getX())
+				.translationY(toDimensions.getY()).alpha(0);
+
 	}
 }
