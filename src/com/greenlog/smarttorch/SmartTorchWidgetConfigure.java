@@ -117,7 +117,26 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		});
 
-		setButtonsState();
+		if (savedInstanceState == null) {
+			setButtonsAnimated(false);
+			setButtonsState(false);
+			setButtonsAnimated(true);
+			setButtonsState();
+		} else {
+			setButtonsAnimated(false);
+			setButtonsState();
+			setButtonsAnimated(true);
+		}
+	}
+
+	private void setButtonsAnimated(final boolean animated) {
+		mTrashButton.setAnimated(animated);
+		mAddButton.setAnimated(animated);
+	}
+
+	private void setButtonsState(final boolean enabled) {
+		mTrashButton.setEnabled(enabled);
+		mAddButton.setEnabled(enabled);
 	}
 
 	private void setButtonsState() {

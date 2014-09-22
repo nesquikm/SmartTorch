@@ -4,12 +4,14 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 
-// TODO: animate on first appear
-// TODO: save state on recreate (orientation change)
+// TODO: 01. animate on first appear
+// TODO: 01. save state on recreate (orientation change)
 public class SmartButton extends ImageView {
 	private boolean mIsDown = false;
+	private boolean mIsAnimated = true;
 
 	public SmartButton(final Context context) {
 		super(context);
@@ -26,8 +28,6 @@ public class SmartButton extends ImageView {
 
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
-		if (!isEnabled())
-			return true;
 		if (isEnabled()) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
@@ -46,7 +46,6 @@ public class SmartButton extends ImageView {
 				}
 				break;
 			}
-			// super.onTouchEvent(event);
 		}
 		return true;
 	}
@@ -76,19 +75,42 @@ public class SmartButton extends ImageView {
 		}
 	}
 
+	public void setAnimated(final boolean isAnimated) {
+		mIsAnimated = isAnimated;
+	}
+
 	@Override
 	public void setEnabled(final boolean enabled) {
 		if (enabled != isEnabled()) {
-			if (enabled) {
-				animate().translationX(0);
-			} else {
+			if (!enabled) {
 				setDown(false);
-				SmartButton.super.setEnabled(true);
-				// Shift right
-				animate().translationXBy(
-						getResources().getDisplayMetrics().widthPixels);
 			}
+
+			setShow(enabled, mIsAnimated);
+
+			SmartButton.super.setEnabled(enabled);
 		}
-		super.setEnabled(enabled);
 	}
+
+	private void setShow(final boolean show, final boolean animated) {
+		if (((View) getParent()).getWidth() == 0) {
+			post(new Runnable() {
+				@Override
+				public void run() {
+					setShow(show, animated);
+				}
+			});
+			return;
+		}
+
+		final float translateXTo = show ? 0 : ((View) getParent()).getWidth()
+				- getLeft();
+
+		if (animated) {
+			animate().translationX(translateXTo);
+		} else {
+			setTranslationX(translateXTo);
+		}
+	}
+
 }

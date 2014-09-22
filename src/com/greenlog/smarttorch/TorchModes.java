@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.util.Log;
 
+// TODO: 00. always sort after remove/add
 public class TorchModes extends ArrayList<TorchMode> {
 	private static final String TAG = TorchModes.class.getSimpleName();
 	private static final long serialVersionUID = 2168019416098900380L;
