@@ -10,7 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-// TODO: 00. why service stay on after config activity shown?
+// TODO: 20. Test: why service stay on after config activity shown (when double-click when toch is on)?
 
 // TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes

@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -62,6 +63,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onCreate() {
+		Log.v(TAG, "onCreate");
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -75,6 +77,9 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onDestroy() {
+		Log.v(TAG, "onDestroy");
+		mNotificationManager.cancelAll();
+
 		stopSensor();
 		stopTimer();
 		turnLed(false);
