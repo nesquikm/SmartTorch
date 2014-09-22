@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.StackView;
 import android.widget.Toast;
 
-// TODO: 00. StackView in and out animations
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
 // TODO: 01. Trash can with animation
@@ -55,7 +54,6 @@ public class SmartTorchWidgetConfigure extends Activity {
 		}
 
 		final boolean isCreateFromExistingWidget = (torchMode != null);
-
 		final Button saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -248,7 +246,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 		mFlyingTorch.setScaleY(fromDimensions.getScale());
 		mFlyingTorch.setTranslationX(fromDimensions.getX());
 		mFlyingTorch.setTranslationY(fromDimensions.getY());
-		mFlyingTorch.setAlpha(1.0f);
+		mFlyingTorch.setAlpha(0.7f);
 
 		mFlyingTorch.setVisibility(View.VISIBLE);
 
@@ -258,7 +256,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 		mFlyingTorch.animate().scaleX(toDimensions.getScale())
 				.scaleY(toDimensions.getScale())
 				.translationX(toDimensions.getX())
-				.translationY(toDimensions.getY()).alpha(0);
+				.translationY(toDimensions.getY()).alpha(0f);
 
 	}
 }

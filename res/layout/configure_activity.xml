@@ -13,8 +13,7 @@
             android:layout_height="240dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:loopViews="true" >
-        </StackView>
+            android:loopViews="true" />
 
         <Button
             android:id="@+id/save_button"
@@ -45,11 +44,11 @@
             android:src="@drawable/add" />
     </RelativeLayout>
 
-    <ImageView 
+    <ImageView
         android:id="@+id/flying_torch"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:src="@drawable/big_back_off"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
 </FrameLayout>

@@ -7,8 +7,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-// TODO: 01. animate on first appear
-// TODO: 01. save state on recreate (orientation change)
 public class SmartButton extends ImageView {
 	private boolean mIsDown = false;
 	private boolean mIsAnimated = true;
