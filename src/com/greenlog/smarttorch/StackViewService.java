@@ -70,8 +70,11 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 	@Override
 	public RemoteViews getLoadingView() {
-		// TODO: 11. eliminate "Loading..."
-		return null;
+		final RemoteViews rv = new RemoteViews(mContext.getPackageName(),
+				R.layout.stackview_item);
+		rv.setTextViewText(R.id.stackview_item_text, "");
+		rv.setViewVisibility(R.id.stackview_item_icon, View.GONE);
+		return rv;
 	}
 
 	@Override

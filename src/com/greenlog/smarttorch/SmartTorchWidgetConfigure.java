@@ -14,10 +14,6 @@ import android.widget.Toast;
 
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
-// TODO: 01. Trash can with animation
-// TODO: 01. Create new mode button with animation
-// TODO: 02. Don't show this configuration window if one or more widgets are already placed
-// TODO: 02. Show toast with "you always can double click to configure SmartTorch widget" 
 
 public class SmartTorchWidgetConfigure extends Activity {
 	private final static String BUNDLE_KEY_TORCH_MODES = "com.greenlog.smarttorch.TORCH_MODES";

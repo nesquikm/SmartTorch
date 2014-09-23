@@ -15,9 +15,8 @@ import android.os.Handler;
 // TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes
 // TODO: 04. set as large as possible large icon for lockscreen
-// TODO: 10. automatically lock screen after turn on (configurable)
-// TODO: 03. icon in settings->running app (service icon
-// TODO: 02. update widget when shaking/timer
+// TODO: 20. automatically lock screen after turn on (configurable).
+// TODO: 19. update widget when shaking/timer
 // TODO: 05. remove/change Log.v (sss)
 
 public class SmartTorchWidget extends AppWidgetProvider {
