@@ -26,5 +26,6 @@
     <string name="configure_until_stop_shaking">shake sensor</string>
     
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
+    <string name="configure_dialog_to_configure">To calibrate the shake sensor put the gadget on the table, click OK, and wait 5 seconds</string>
 
 </resources>

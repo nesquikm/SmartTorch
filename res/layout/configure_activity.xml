@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/configure_shaking_sensitivity"/>
 
-            <Spinner
+            <com.greenlog.smarttorch.SmartSpinner
                 android:id="@+id/accelerometer_sens_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

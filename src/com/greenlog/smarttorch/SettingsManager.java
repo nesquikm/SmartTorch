@@ -13,7 +13,13 @@ public class SettingsManager {
 	private static final String TORCH_MODE_COUNT = "torch_mode_count";
 	private static final String TORCH_MODE_TIMEOUT = "torch_mode_timeout_";
 	private static final String TORCH_MODE_SHAKE_SENSOR_ENABLED = "shake_sensor_enabled_";
+
 	public final static int MAX_MODE_COUNT = 5;
+
+	public final static int SHAKE_SENS_LOW = 0;
+	public final static int SHAKE_SENS_MEDIUM = 1;
+	public final static int SHAKE_SENS_HIGH = 2;
+	public final static int SHAKE_SENS_CALIBRATED = 3;
 
 	private final Context mContext;
 	private final SharedPreferences mSharedPreferences;

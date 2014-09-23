@@ -3,14 +3,18 @@ package com.greenlog.smarttorch;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.StackView;
 import android.widget.Toast;
 
@@ -32,7 +36,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 	private boolean mFlyingTorchIsInAnimation = false;
 
-	private Spinner mAccelerometerSensPicker;
+	private SmartSpinner mAccelerometerSensPicker;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -54,6 +58,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 		final boolean isCreateFromExistingWidget = (!AppWidgetManager.ACTION_APPWIDGET_CONFIGURE
 				.equals(intent.getAction()));
+
+		// Save/"OK" button
 		final Button saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -80,6 +86,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		});
 
+		// StackView
 		mStackView = (StackView) findViewById(R.id.stack_view);
 		if (savedInstanceState != null) {
 			mTorchModeAdapter = new TorchModeAdapter(this,
@@ -97,9 +104,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		}
 
+		// Trash button
 		mTrashButton = (SmartButton) findViewById(R.id.trash_button);
-		mAddButton = (SmartButton) findViewById(R.id.add_button);
-
 		mTrashButton.setClickable(true);
 		mTrashButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -113,6 +119,9 @@ public class SmartTorchWidgetConfigure extends Activity {
 				// setButtonsState();
 			}
 		});
+
+		// Add button
+		mAddButton = (SmartButton) findViewById(R.id.add_button);
 		mAddButton.setClickable(true);
 		mAddButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -135,9 +144,11 @@ public class SmartTorchWidgetConfigure extends Activity {
 			}
 		});
 
+		// Flying torch
 		mFlyingTorch = (ImageView) findViewById(R.id.flying_torch);
 
-		mAccelerometerSensPicker = (Spinner) findViewById(R.id.accelerometer_sens_picker);
+		// Shake sensitivity picker
+		mAccelerometerSensPicker = (SmartSpinner) findViewById(R.id.accelerometer_sens_picker);
 		final ArrayAdapter<CharSequence> sensAdapter = ArrayAdapter
 				.createFromResource(this,
 						R.array.accelerometer_sensitivity_modes,
@@ -145,7 +156,25 @@ public class SmartTorchWidgetConfigure extends Activity {
 		sensAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccelerometerSensPicker.setAdapter(sensAdapter);
+		mAccelerometerSensPicker
+				.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(final AdapterView<?> parent,
+							final View view, final int position, final long id) {
+						switch (position) {
+						case SettingsManager.SHAKE_SENS_LOW:
+						case SettingsManager.SHAKE_SENS_MEDIUM:
+						case SettingsManager.SHAKE_SENS_HIGH:
+							Log.v("sss", "*** " + position);
+							break;
+						case SettingsManager.SHAKE_SENS_CALIBRATED:
+							showDialogToConfigure();
+							break;
+						}
+					}
+				});
 
+		// Init buttons state
 		if (savedInstanceState == null) {
 			setButtonsAnimated(false);
 			setButtonsState(false);
@@ -179,6 +208,31 @@ public class SmartTorchWidgetConfigure extends Activity {
 		super.onSaveInstanceState(outState);
 		outState.putBundle(BUNDLE_KEY_TORCH_MODES,
 				mTorchModeAdapter.getTorchModesBundle());
+	}
+
+	// TODO: 00. remove leak when orientation change
+	private void showDialogToConfigure() {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.configure_dialog_to_configure);
+		builder.setPositiveButton(android.R.string.ok,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(final DialogInterface dialog,
+							final int which) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+		builder.setNegativeButton(android.R.string.cancel,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(final DialogInterface dialog,
+							final int which) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+		builder.create().show();
 	}
 
 	private void moveFlyingTorchTo(final View from, final View to,
