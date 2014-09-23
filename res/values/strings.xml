@@ -24,5 +24,7 @@
     
     <string name="configure_activity_title">SmartTorch configuration</string>
     <string name="configure_until_stop_shaking">shake sensor</string>
+    
+    <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
 
 </resources>

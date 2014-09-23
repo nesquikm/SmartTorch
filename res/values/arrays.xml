@@ -18,5 +18,12 @@
     </string-array>
 
     <string name="default_mode">5,true</string>
+    
+    <string-array name="accelerometer_sensitivity_modes">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Calibrated</item>
+    </string-array>
 
 </resources>

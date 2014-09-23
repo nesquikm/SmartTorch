@@ -101,8 +101,10 @@ public class SmartButton extends ImageView {
 			return;
 		}
 
-		final float translateXTo = show ? 0 : ((View) getParent()).getWidth()
-				- getLeft();
+		final float hidePosition = (getLeft() > ((View) getParent()).getWidth() / 2) ? (((View) getParent())
+				.getWidth() - getLeft()) : (getLeft() - getWidth());
+
+		final float translateXTo = show ? 0 : hidePosition;
 
 		if (animated) {
 			animate().translationX(translateXTo);

@@ -1,3 +1,5 @@
 <resources>
-    
+    <color name="light_background">#FF0099cc</color>
+    <color name="dark_background">#FF006789</color>
+    <color name="widget_group_background">#FFFFFFFF</color>
 </resources>

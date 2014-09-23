@@ -7,8 +7,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.StackView;
 import android.widget.Toast;
 
@@ -29,6 +31,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private ImageView mFlyingTorch;
 
 	private boolean mFlyingTorchIsInAnimation = false;
+
+	private Spinner mAccelerometerSensPicker;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -132,6 +136,15 @@ public class SmartTorchWidgetConfigure extends Activity {
 		});
 
 		mFlyingTorch = (ImageView) findViewById(R.id.flying_torch);
+
+		mAccelerometerSensPicker = (Spinner) findViewById(R.id.accelerometer_sens_picker);
+		final ArrayAdapter<CharSequence> sensAdapter = ArrayAdapter
+				.createFromResource(this,
+						R.array.accelerometer_sensitivity_modes,
+						android.R.layout.simple_spinner_item);
+		sensAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mAccelerometerSensPicker.setAdapter(sensAdapter);
 
 		if (savedInstanceState == null) {
 			setButtonsAnimated(false);

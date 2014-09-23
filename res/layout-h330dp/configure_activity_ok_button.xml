@@ -1,0 +1,10 @@
+<!-- By default we want to place the button right under the StackView -->
+
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/save_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/stack_view"
+    android:layout_centerHorizontal="true"
+    android:text="@android:string/ok"
+    android:textColor="@android:color/white" />
