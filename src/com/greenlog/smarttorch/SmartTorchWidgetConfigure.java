@@ -10,7 +10,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -19,6 +18,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.StackView;
 import android.widget.Toast;
+
+import com.greenlog.smarttorch.ShakeSensitivityCalibrateDialog.OnCalibratedListener;
 
 // TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
 // TODO: 01. Orientation change tests!
@@ -284,7 +285,6 @@ public class SmartTorchWidgetConfigure extends Activity {
 					@Override
 					public void onClick(final DialogInterface dialog,
 							final int which) {
-						Log.v("sss", "mDialogToConfigure OK");
 						mShakeSensitivityCalibrateDialog = new ShakeSensitivityCalibrateDialog(
 								SmartTorchWidgetConfigure.this);
 						mShakeSensitivityCalibrateDialog
@@ -293,6 +293,18 @@ public class SmartTorchWidgetConfigure extends Activity {
 									public void onCancel(
 											final DialogInterface dialog) {
 										cancelCalibration();
+									}
+								});
+						mShakeSensitivityCalibrateDialog
+								.setOnCalibratedListener(new OnCalibratedListener() {
+									@Override
+									public void onCalibrated(
+											final DialogInterface dialog) {
+										mLastShakeSensMode = SettingsManager.SHAKE_SENSITIVITY_CALIBRATED;
+										Toast.makeText(
+												SmartTorchWidgetConfigure.this,
+												R.string.calibrated_successful,
+												Toast.LENGTH_SHORT).show();
 									}
 								});
 						mShakeSensitivityCalibrateDialog.show();
@@ -325,6 +337,12 @@ public class SmartTorchWidgetConfigure extends Activity {
 				showDialogToConfigure();
 			}
 		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		cancelCalibration();
 	}
 
 	@Override

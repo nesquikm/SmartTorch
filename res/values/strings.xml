@@ -28,8 +28,12 @@
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
     <string name="configure_dialog_to_configure">To calibrate the shake sensor put the gadget on the table, click OK, and wait 5 seconds</string>
     
+    <string name="calibration">Calibration</string>
     <string name="calibrate_do_not_touch">Please, do not touch your gadget!</string>
     <string name="calibrate_preparing">preparing…</string>
+    <string name="calibration_timer">%1$s remaining</string>
+    
     <string name="calibration_cancelled">Calibration was cancelled</string>
+    <string name="calibrated_successful">Calibrated successful</string>
     
 </resources>
