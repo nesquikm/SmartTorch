@@ -6,8 +6,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +28,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private final static String IS_DIALOG_TO_CONFIGURE_SHOWING = "com.greenlog.smarttorch.IS_DIALOG_TO_CONFIGURE_SHOWING";
 	private final static String LAST_SHAKE_SENSITIVITY_MODE = "com.greenlog.smarttorch.LAST_SHAKE_SENSITIVITY_MODE";
 	private final static String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "com.greenlog.smarttorch.SHAKE_SENSITIVITY_CALIBRATED_VALUE";
+	private final static String SHAKE_SENSITIVITY_MODE_RESET = "com.greenlog.smarttorch.SHAKE_SENSITIVITY_MODE_RESET";
 
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
@@ -42,6 +45,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private SmartSpinner mAccelerometerSensPicker;
 
 	private AlertDialog mDialogToConfigure;
+	private ShakeSensitivityCalibrateDialog mShakeSensitivityCalibrateDialog;
 
 	private int mLastShakeSensMode;
 	private float mShakeSensitivityCalibratedValue;
@@ -205,6 +209,19 @@ public class SmartTorchWidgetConfigure extends Activity {
 					SettingsManager.SHAKE_SENSITIVITY_DEFAULT);
 			mShakeSensitivityCalibratedValue = savedInstanceState.getFloat(
 					SHAKE_SENSITIVITY_CALIBRATED_VALUE, -1);
+			if (savedInstanceState.getBoolean(SHAKE_SENSITIVITY_MODE_RESET,
+					false)) {
+				// Spinner don't want to setSelection when saved instance is
+				// present. So, postpone the call
+				final Handler handler = new Handler();
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						mAccelerometerSensPicker
+								.setSelectionSilently(mLastShakeSensMode);
+					}
+				});
+			}
 		}
 		restoreDialogToConfigure(savedInstanceState);
 
@@ -247,6 +264,12 @@ public class SmartTorchWidgetConfigure extends Activity {
 		outState.putInt(LAST_SHAKE_SENSITIVITY_MODE, mLastShakeSensMode);
 		outState.putFloat(SHAKE_SENSITIVITY_CALIBRATED_VALUE,
 				mShakeSensitivityCalibratedValue);
+
+		if (mShakeSensitivityCalibrateDialog != null) {
+			// Calibration dialog is shown. So, kill it onDestroy and set the
+			// flag for reset Spinner state onCreate
+			outState.putBoolean(SHAKE_SENSITIVITY_MODE_RESET, true);
+		}
 	}
 
 	private void showDialogToConfigure() {
@@ -262,6 +285,17 @@ public class SmartTorchWidgetConfigure extends Activity {
 					public void onClick(final DialogInterface dialog,
 							final int which) {
 						Log.v("sss", "mDialogToConfigure OK");
+						mShakeSensitivityCalibrateDialog = new ShakeSensitivityCalibrateDialog(
+								SmartTorchWidgetConfigure.this);
+						mShakeSensitivityCalibrateDialog
+								.setOnCancelListener(new OnCancelListener() {
+									@Override
+									public void onCancel(
+											final DialogInterface dialog) {
+										cancelCalibration();
+									}
+								});
+						mShakeSensitivityCalibrateDialog.show();
 					}
 				});
 		builder.setNegativeButton(android.R.string.cancel,
@@ -269,11 +303,17 @@ public class SmartTorchWidgetConfigure extends Activity {
 					@Override
 					public void onClick(final DialogInterface dialog,
 							final int which) {
-						Log.v("sss", "mDialogToConfigure CANCEL");
 						mAccelerometerSensPicker
 								.setSelectionSilently(mLastShakeSensMode);
 					}
 				});
+		builder.setOnCancelListener(new OnCancelListener() {
+			@Override
+			public void onCancel(final DialogInterface dialog) {
+				mAccelerometerSensPicker
+						.setSelectionSilently(mLastShakeSensMode);
+			}
+		});
 		mDialogToConfigure = builder.create();
 		mDialogToConfigure.show();
 	}
@@ -293,7 +333,23 @@ public class SmartTorchWidgetConfigure extends Activity {
 			mDialogToConfigure.dismiss();
 			mDialogToConfigure = null;
 		}
+
+		// So, we Spinner.setSelectionSilently() don't work here, and we put the
+		// flag onSaveInstanceState
+		cancelCalibration();
+
 		super.onDestroy();
+	}
+
+	private void cancelCalibration() {
+		if (mShakeSensitivityCalibrateDialog != null) {
+			mShakeSensitivityCalibrateDialog.cancel();
+			mShakeSensitivityCalibrateDialog = null;
+			Toast.makeText(this, R.string.calibration_cancelled,
+					Toast.LENGTH_SHORT).show();
+
+			mAccelerometerSensPicker.setSelectionSilently(mLastShakeSensMode);
+		}
 	}
 
 	private void moveFlyingTorchTo(final View from, final View to,
