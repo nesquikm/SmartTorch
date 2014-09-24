@@ -46,7 +46,8 @@
             android:exported="false" />
 
         <activity android:name=".SmartTorchWidgetConfigure"
-            android:label="@string/configure_activity_title" >
+            android:label="@string/configure_activity_title"
+            android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
                 <action android:name="android.intent.action.MAIN" />

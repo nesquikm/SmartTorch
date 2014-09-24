@@ -32,9 +32,10 @@ public class TorchModeAdapter extends BaseAdapter {
 	/**
 	 * Constructor, reads modes from bundle
 	 */
-	public TorchModeAdapter(final Context context, final Bundle bundle) {
+	public TorchModeAdapter(final Context context, final Bundle bundle,
+			final SettingsManager settingsManager) {
 		mContext = context;
-		mSettingsManager = new SettingsManager(context);
+		mSettingsManager = settingsManager;
 
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -60,8 +61,9 @@ public class TorchModeAdapter extends BaseAdapter {
 	/**
 	 * Constructor, reads modes from settings
 	 */
-	public TorchModeAdapter(final Context context) {
-		this(context, null);
+	public TorchModeAdapter(final Context context,
+			final SettingsManager settingsManager) {
+		this(context, null, settingsManager);
 
 		mTorchModes = mSettingsManager.readTorchModes();
 	}

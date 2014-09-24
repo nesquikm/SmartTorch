@@ -10,16 +10,21 @@ public class SettingsManager {
 	private static final String TAG = SettingsManager.class.getSimpleName();
 
 	private static final String PREFERENCE_FILE_KEY = "com.greenlog.smarttorch.PREFERENCE_FILE_KEY";
+
 	private static final String TORCH_MODE_COUNT = "torch_mode_count";
 	private static final String TORCH_MODE_TIMEOUT = "torch_mode_timeout_";
 	private static final String TORCH_MODE_SHAKE_SENSOR_ENABLED = "shake_sensor_enabled_";
 
+	private static final String SHAKE_SENSITIVITY_MODE = "shake_sensitivity_mode";
+	private static final String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "shake_sensitivity_calibrated_value";
+
 	public final static int MAX_MODE_COUNT = 5;
 
-	public final static int SHAKE_SENS_LOW = 0;
-	public final static int SHAKE_SENS_MEDIUM = 1;
-	public final static int SHAKE_SENS_HIGH = 2;
-	public final static int SHAKE_SENS_CALIBRATED = 3;
+	public final static int SHAKE_SENSITIVITY_LOW = 0;
+	public final static int SHAKE_SENSITIVITY_MEDIUM = 1;
+	public final static int SHAKE_SENSITIVITY_HIGH = 2;
+	public final static int SHAKE_SENSITIVITY_CALIBRATED = 3;
+	public final static int SHAKE_SENSITIVITY_DEFAULT = 1;
 
 	private final Context mContext;
 	private final SharedPreferences mSharedPreferences;
@@ -82,4 +87,27 @@ public class SettingsManager {
 			}
 		}
 	}
+
+	public void writeShakeSensorSensitivity(final int mode, final float value) {
+		final SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putInt(SHAKE_SENSITIVITY_MODE, mode);
+		editor.putFloat(SHAKE_SENSITIVITY_CALIBRATED_VALUE, value);
+		editor.commit();
+	}
+
+	public int readShakeSensorSensitivityMode() {
+		final int mode = mSharedPreferences.getInt(SHAKE_SENSITIVITY_MODE,
+				SHAKE_SENSITIVITY_DEFAULT);
+		if (readShakeSensorSensitivityCalibratedValue() < 0
+				&& mode == SHAKE_SENSITIVITY_CALIBRATED) {
+			return SHAKE_SENSITIVITY_DEFAULT;
+		}
+		return mode;
+	}
+
+	public float readShakeSensorSensitivityCalibratedValue() {
+		return mSharedPreferences.getFloat(SHAKE_SENSITIVITY_CALIBRATED_VALUE,
+				-1f);
+	}
+
 }

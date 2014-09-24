@@ -18,7 +18,6 @@ public class SmartSpinner extends Spinner {
 	public SmartSpinner(final Context context, final AttributeSet attrs,
 			final int defStyle) {
 		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
 	}
 
 	public SmartSpinner(final Context context, final AttributeSet attrs,

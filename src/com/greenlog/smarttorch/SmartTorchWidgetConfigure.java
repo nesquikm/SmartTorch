@@ -23,6 +23,9 @@ import android.widget.Toast;
 
 public class SmartTorchWidgetConfigure extends Activity {
 	private final static String BUNDLE_KEY_TORCH_MODES = "com.greenlog.smarttorch.TORCH_MODES";
+	private final static String IS_DIALOG_TO_CONFIGURE_SHOWING = "com.greenlog.smarttorch.IS_DIALOG_TO_CONFIGURE_SHOWING";
+	private final static String LAST_SHAKE_SENSITIVITY_MODE = "com.greenlog.smarttorch.LAST_SHAKE_SENSITIVITY_MODE";
+	private final static String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "com.greenlog.smarttorch.SHAKE_SENSITIVITY_CALIBRATED_VALUE";
 
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
@@ -38,11 +41,20 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 	private SmartSpinner mAccelerometerSensPicker;
 
+	private AlertDialog mDialogToConfigure;
+
+	private int mLastShakeSensMode;
+	private float mShakeSensitivityCalibratedValue;
+
+	private SettingsManager mSettingsManager;
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setResult(RESULT_CANCELED);
 		setContentView(R.layout.configure_activity);
+
+		mSettingsManager = new SettingsManager(this);
 
 		// Find the widget id from the intent.
 		final Intent intent = getIntent();
@@ -65,6 +77,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 			@Override
 			public void onClick(final View v) {
 				mTorchModeAdapter.saveTorchModes();
+				mSettingsManager.writeShakeSensorSensitivity(
+						mLastShakeSensMode, mShakeSensitivityCalibratedValue);
 				// Update ALL widgets config!
 				SmartTorchService.sendCommandToService(
 						SmartTorchWidgetConfigure.this,
@@ -90,9 +104,10 @@ public class SmartTorchWidgetConfigure extends Activity {
 		mStackView = (StackView) findViewById(R.id.stack_view);
 		if (savedInstanceState != null) {
 			mTorchModeAdapter = new TorchModeAdapter(this,
-					savedInstanceState.getBundle(BUNDLE_KEY_TORCH_MODES));
+					savedInstanceState.getBundle(BUNDLE_KEY_TORCH_MODES),
+					mSettingsManager);
 		} else {
-			mTorchModeAdapter = new TorchModeAdapter(this);
+			mTorchModeAdapter = new TorchModeAdapter(this, mSettingsManager);
 		}
 
 		// show selected on widget mode
@@ -162,17 +177,36 @@ public class SmartTorchWidgetConfigure extends Activity {
 					public void onItemClick(final AdapterView<?> parent,
 							final View view, final int position, final long id) {
 						switch (position) {
-						case SettingsManager.SHAKE_SENS_LOW:
-						case SettingsManager.SHAKE_SENS_MEDIUM:
-						case SettingsManager.SHAKE_SENS_HIGH:
-							Log.v("sss", "*** " + position);
+						case SettingsManager.SHAKE_SENSITIVITY_LOW:
+						case SettingsManager.SHAKE_SENSITIVITY_MEDIUM:
+						case SettingsManager.SHAKE_SENSITIVITY_HIGH:
+							// Save last selected
+							mLastShakeSensMode = mAccelerometerSensPicker
+									.getSelectedItemPosition();
 							break;
-						case SettingsManager.SHAKE_SENS_CALIBRATED:
+						case SettingsManager.SHAKE_SENSITIVITY_CALIBRATED:
 							showDialogToConfigure();
 							break;
 						}
 					}
 				});
+
+		if (savedInstanceState == null) {
+			mLastShakeSensMode = mSettingsManager
+					.readShakeSensorSensitivityMode();
+			mShakeSensitivityCalibratedValue = mSettingsManager
+					.readShakeSensorSensitivityCalibratedValue();
+			mAccelerometerSensPicker.setSelectionSilently(mLastShakeSensMode);
+		}
+
+		if (savedInstanceState != null) {
+			mLastShakeSensMode = savedInstanceState.getInt(
+					LAST_SHAKE_SENSITIVITY_MODE,
+					SettingsManager.SHAKE_SENSITIVITY_DEFAULT);
+			mShakeSensitivityCalibratedValue = savedInstanceState.getFloat(
+					SHAKE_SENSITIVITY_CALIBRATED_VALUE, -1);
+		}
+		restoreDialogToConfigure(savedInstanceState);
 
 		// Init buttons state
 		if (savedInstanceState == null) {
@@ -208,10 +242,18 @@ public class SmartTorchWidgetConfigure extends Activity {
 		super.onSaveInstanceState(outState);
 		outState.putBundle(BUNDLE_KEY_TORCH_MODES,
 				mTorchModeAdapter.getTorchModesBundle());
+		outState.putBoolean(IS_DIALOG_TO_CONFIGURE_SHOWING,
+				(mDialogToConfigure != null && mDialogToConfigure.isShowing()));
+		outState.putInt(LAST_SHAKE_SENSITIVITY_MODE, mLastShakeSensMode);
+		outState.putFloat(SHAKE_SENSITIVITY_CALIBRATED_VALUE,
+				mShakeSensitivityCalibratedValue);
 	}
 
-	// TODO: 00. remove leak when orientation change
 	private void showDialogToConfigure() {
+		if (mDialogToConfigure != null) {
+			mDialogToConfigure.dismiss();
+		}
+
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(R.string.configure_dialog_to_configure);
 		builder.setPositiveButton(android.R.string.ok,
@@ -219,8 +261,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 					@Override
 					public void onClick(final DialogInterface dialog,
 							final int which) {
-						// TODO Auto-generated method stub
-
+						Log.v("sss", "mDialogToConfigure OK");
 					}
 				});
 		builder.setNegativeButton(android.R.string.cancel,
@@ -228,11 +269,31 @@ public class SmartTorchWidgetConfigure extends Activity {
 					@Override
 					public void onClick(final DialogInterface dialog,
 							final int which) {
-						// TODO Auto-generated method stub
-
+						Log.v("sss", "mDialogToConfigure CANCEL");
+						mAccelerometerSensPicker
+								.setSelectionSilently(mLastShakeSensMode);
 					}
 				});
-		builder.create().show();
+		mDialogToConfigure = builder.create();
+		mDialogToConfigure.show();
+	}
+
+	private void restoreDialogToConfigure(final Bundle savedInstanceState) {
+		if (savedInstanceState != null) {
+			if (savedInstanceState.getBoolean(IS_DIALOG_TO_CONFIGURE_SHOWING,
+					false)) {
+				showDialogToConfigure();
+			}
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (mDialogToConfigure != null) {
+			mDialogToConfigure.dismiss();
+			mDialogToConfigure = null;
+		}
+		super.onDestroy();
 	}
 
 	private void moveFlyingTorchTo(final View from, final View to,
