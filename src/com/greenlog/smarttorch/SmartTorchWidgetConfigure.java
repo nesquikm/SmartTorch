@@ -10,6 +10,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -25,6 +26,9 @@ import com.greenlog.smarttorch.ShakeSensitivityCalibrateDialog.OnCalibratedListe
 // TODO: 01. Orientation change tests!
 
 public class SmartTorchWidgetConfigure extends Activity {
+	private static final String TAG = SmartTorchWidgetConfigure.class
+			.getSimpleName();
+
 	private final static String BUNDLE_KEY_TORCH_MODES = "com.greenlog.smarttorch.TORCH_MODES";
 	private final static String IS_DIALOG_TO_CONFIGURE_SHOWING = "com.greenlog.smarttorch.IS_DIALOG_TO_CONFIGURE_SHOWING";
 	private final static String LAST_SHAKE_SENSITIVITY_MODE = "com.greenlog.smarttorch.LAST_SHAKE_SENSITIVITY_MODE";
@@ -299,12 +303,16 @@ public class SmartTorchWidgetConfigure extends Activity {
 								.setOnCalibratedListener(new OnCalibratedListener() {
 									@Override
 									public void onCalibrated(
-											final DialogInterface dialog) {
+											final DialogInterface dialog,
+											final float calibratedValue) {
 										mLastShakeSensMode = SettingsManager.SHAKE_SENSITIVITY_CALIBRATED;
 										Toast.makeText(
 												SmartTorchWidgetConfigure.this,
 												R.string.calibrated_successful,
 												Toast.LENGTH_SHORT).show();
+										mShakeSensitivityCalibratedValue = calibratedValue;
+										Log.v(TAG, "Calibrated "
+												+ calibratedValue);
 									}
 								});
 						mShakeSensitivityCalibrateDialog.show();

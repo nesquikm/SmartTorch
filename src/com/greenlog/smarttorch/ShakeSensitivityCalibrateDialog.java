@@ -9,24 +9,42 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ShakeSensitivityCalibrateDialog extends Dialog {
+public class ShakeSensitivityCalibrateDialog extends Dialog implements
+		SensorEventListener {
 	private static final int CALIBRATED = 0xff43;
 
 	private static final int PREPARATION_DELAY_MS = 1000;
 	private static final int CALIBRATION_TIME_MS = 5000;
 
+	private static final float CALIBRATION_VALUE_FACTOR = 1.1f;
+
+	private static final String BUNDLE_KEY_CALIBRATION_VALUE = "com.greenlog.smarttorch.BUNDLE_KEY_CALIBRATION_VALUE";
+
 	private long mStartTime;
 	private Timer mTimer;
 	private TextView mTimeText;
 	private ProgressBar mTimeProgress;
+
 	private Handler mListenersHandlerEx;
 	private Message mCalibratedMessage;
+
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private Utils.AccelerationInterpolator mAccelerationInterpolator;
+	private boolean mInCalibration = false;
+
+	private static final float MAX_ACCELERATION_TO_CANCEL = 1.0f;
+	private float mMaxAcceleration = 0f;
 
 	public ShakeSensitivityCalibrateDialog(final Context context) {
 		super(context);
@@ -71,6 +89,8 @@ public class ShakeSensitivityCalibrateDialog extends Dialog {
 								- mStartTime;
 						if (timeFromCreate < PREPARATION_DELAY_MS) {
 						} else if (timeFromCreate < (PREPARATION_DELAY_MS + CALIBRATION_TIME_MS)) {
+							mInCalibration = true;
+
 							final long timeFromStart = timeFromCreate
 									- PREPARATION_DELAY_MS;
 							final int remainSec = (int) (CALIBRATION_TIME_MS - timeFromStart) / 1000 + 1;
@@ -85,9 +105,7 @@ public class ShakeSensitivityCalibrateDialog extends Dialog {
 							mTimeProgress
 									.setProgress((int) (100 * timeFromStart / CALIBRATION_TIME_MS));
 						} else {
-							mTimer.cancel();
-							mTimer.purge();
-							mTimer = null;
+							stopTimer();
 
 							calibrated();
 							ShakeSensitivityCalibrateDialog.this.dismiss();
@@ -96,17 +114,47 @@ public class ShakeSensitivityCalibrateDialog extends Dialog {
 				});
 			}
 		}, 100, 100);
+
+		startSensor();
 	}
 
 	@Override
 	protected void onStop() {
-		mTimer.cancel();
-		mTimer.purge();
+		stopSensor();
+		stopTimer();
 		super.onStop();
+	}
+
+	private void stopTimer() {
+		if (mTimer != null) {
+			mTimer.cancel();
+			mTimer.purge();
+			mTimer = null;
+		}
+	}
+
+	private void startSensor() {
+		mSensorManager = (SensorManager) getContext().getSystemService(
+				Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager
+				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		mAccelerationInterpolator = new Utils.AccelerationInterpolator();
+
+		mSensorManager.registerListener(this, mAccelerometer,
+				SensorManager.SENSOR_DELAY_UI);
+	}
+
+	private void stopSensor() {
+		mSensorManager.unregisterListener(this);
 	}
 
 	private void calibrated() {
 		if (mCalibratedMessage != null) {
+			final Bundle bundle = new Bundle();
+			bundle.putFloat(BUNDLE_KEY_CALIBRATION_VALUE, mMaxAcceleration
+					* CALIBRATION_VALUE_FACTOR);
+			mCalibratedMessage.setData(bundle);
 			Message.obtain(mCalibratedMessage).sendToTarget();
 		}
 	}
@@ -121,7 +169,7 @@ public class ShakeSensitivityCalibrateDialog extends Dialog {
 	}
 
 	interface OnCalibratedListener {
-		public void onCalibrated(DialogInterface dialog);
+		public void onCalibrated(DialogInterface dialog, float calibratedValue);
 	}
 
 	private static final class ListenersHandlerEx extends Handler {
@@ -134,10 +182,34 @@ public class ShakeSensitivityCalibrateDialog extends Dialog {
 		@Override
 		public void handleMessage(final Message msg) {
 			switch (msg.what) {
-			case CALIBRATED:
-				((OnCalibratedListener) msg.obj).onCalibrated(mDialog.get());
+			case CALIBRATED: {
+				final Bundle bundle = msg.getData();
+				((OnCalibratedListener) msg.obj).onCalibrated(mDialog.get(),
+						bundle.getFloat(BUNDLE_KEY_CALIBRATION_VALUE));
+			}
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void onSensorChanged(final SensorEvent event) {
+		if (!mInCalibration) {
+			return;
+		}
+
+		final float acceleration = mAccelerationInterpolator
+				.getAcceleration(event.values);
+		if (acceleration > MAX_ACCELERATION_TO_CANCEL) {
+			cancel();
+		}
+
+		if (acceleration > mMaxAcceleration) {
+			mMaxAcceleration = acceleration;
+		}
+	}
+
+	@Override
+	public void onAccuracyChanged(final Sensor sensor, final int accuracy) {
 	}
 }

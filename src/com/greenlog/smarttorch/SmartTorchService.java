@@ -50,16 +50,14 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	private final float mAccelerationSlow[] = new float[3];
-	private final float mAccelerationFast[] = new float[3];
-	private final static float ACCELERATION_FILTER_ALPHA_SLOW = 0.2f;
-	private final static float ACCELERATION_FILTER_ALPHA_FAST = 1f;
-	// TODO: 01. configurable sensitivity!!!!!
-	private final static float ACCELERATION_THRESHOLD = 0.1f;
 
 	private TorchCamera mTorchCamera;
 
 	private PowerManager.WakeLock mWakeLock = null;
+
+	private Utils.AccelerationInterpolator mAccelerationInterpolator;
+
+	private SettingsManager mSettingsManager;
 
 	@Override
 	public void onCreate() {
@@ -70,7 +68,11 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mAccelerometer = mSensorManager
 				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+		mAccelerationInterpolator = new Utils.AccelerationInterpolator();
+
 		mTorchCamera = new TorchCamera(this);
+
+		mSettingsManager = new SettingsManager(this);
 
 		super.onCreate();
 	}
@@ -328,42 +330,11 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(final SensorEvent event) {
-
-		for (int i = 0; i < 3; i++) {
-			mAccelerationSlow[i] = ACCELERATION_FILTER_ALPHA_SLOW
-					* event.values[i] + (1 - ACCELERATION_FILTER_ALPHA_SLOW)
-					* mAccelerationSlow[i];
-			mAccelerationFast[i] = ACCELERATION_FILTER_ALPHA_FAST
-					* event.values[i] + (1 - ACCELERATION_FILTER_ALPHA_FAST)
-					* mAccelerationFast[i];
-		}
-
-		for (int i = 0; i < 3; i++) {
-			mIsShaking = (Math.abs(mAccelerationSlow[i] - mAccelerationFast[i]) > ACCELERATION_THRESHOLD);
-			if (mIsShaking)
-				break;
-		}
+		mIsShaking = mAccelerationInterpolator.getAcceleration(event.values) > mSettingsManager
+				.getSensitivityValue();
 	}
 
 	@Override
 	public void onAccuracyChanged(final Sensor sensor, final int accuracy) {
-		String accuracyString = "unknown";
-		switch (accuracy) {
-		case SensorManager.SENSOR_STATUS_ACCURACY_HIGH:
-			accuracyString = "high";
-			break;
-		case SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM:
-			accuracyString = "medium";
-			break;
-		case SensorManager.SENSOR_STATUS_ACCURACY_LOW:
-			accuracyString = "low";
-			break;
-		case SensorManager.SENSOR_STATUS_NO_CONTACT:
-			accuracyString = "no_contact";
-			break;
-		case SensorManager.SENSOR_STATUS_UNRELIABLE:
-			accuracyString = "unreliable";
-			break;
-		}
 	}
 }

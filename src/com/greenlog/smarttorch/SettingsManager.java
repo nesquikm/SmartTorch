@@ -26,6 +26,10 @@ public class SettingsManager {
 	public final static int SHAKE_SENSITIVITY_CALIBRATED = 3;
 	public final static int SHAKE_SENSITIVITY_DEFAULT = 1;
 
+	public final static float SHAKE_SENSITIVITY_LOW_VALUE = 0.5f;
+	public final static float SHAKE_SENSITIVITY_MEDIUM_VALUE = 0.3f;
+	public final static float SHAKE_SENSITIVITY_HIGH_VALUE = 0.15f;
+
 	private final Context mContext;
 	private final SharedPreferences mSharedPreferences;
 
@@ -110,4 +114,17 @@ public class SettingsManager {
 				-1f);
 	}
 
+	public float getSensitivityValue() {
+		switch (readShakeSensorSensitivityMode()) {
+		case SHAKE_SENSITIVITY_LOW:
+			return SHAKE_SENSITIVITY_LOW_VALUE;
+		default:
+		case SHAKE_SENSITIVITY_MEDIUM:
+			return SHAKE_SENSITIVITY_MEDIUM_VALUE;
+		case SHAKE_SENSITIVITY_HIGH:
+			return SHAKE_SENSITIVITY_HIGH_VALUE;
+		case SHAKE_SENSITIVITY_CALIBRATED:
+			return readShakeSensorSensitivityCalibratedValue();
+		}
+	}
 }
