@@ -51,7 +51,8 @@ public class SmartTorchWidget extends AppWidgetProvider {
 					final Intent configureActivityIntent = new Intent(context,
 							SmartTorchWidgetConfigure.class);
 					configureActivityIntent
-							.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+									| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 					configureActivityIntent.putExtras(intent.getExtras());
 					context.startActivity(configureActivityIntent);
 				}
