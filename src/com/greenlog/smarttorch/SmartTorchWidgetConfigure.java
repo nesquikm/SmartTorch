@@ -305,14 +305,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 									public void onCalibrated(
 											final DialogInterface dialog,
 											final float calibratedValue) {
-										mLastShakeSensMode = SettingsManager.SHAKE_SENSITIVITY_CALIBRATED;
-										Toast.makeText(
-												SmartTorchWidgetConfigure.this,
-												R.string.calibrated_successful,
-												Toast.LENGTH_SHORT).show();
-										mShakeSensitivityCalibratedValue = calibratedValue;
-										Log.v(TAG, "Calibrated "
-												+ calibratedValue);
+										successCalibration(calibratedValue);
 									}
 								});
 						mShakeSensitivityCalibrateDialog.show();
@@ -376,6 +369,15 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 			mAccelerometerSensPicker.setSelectionSilently(mLastShakeSensMode);
 		}
+	}
+
+	private void successCalibration(final float calibratedValue) {
+		mLastShakeSensMode = SettingsManager.SHAKE_SENSITIVITY_CALIBRATED;
+		Toast.makeText(SmartTorchWidgetConfigure.this,
+				R.string.calibrated_successful, Toast.LENGTH_SHORT).show();
+		mShakeSensitivityCalibratedValue = calibratedValue;
+		Log.v(TAG, "Calibrated " + calibratedValue);
+		mShakeSensitivityCalibrateDialog = null;
 	}
 
 	private void moveFlyingTorchTo(final View from, final View to,
