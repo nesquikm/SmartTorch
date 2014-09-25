@@ -3,11 +3,9 @@
     <string name="infinity" translatable="false">∞</string>
     <string name="timer_time" translatable="false">%1$s%2$s</string>
     
-    
     <string name="app_name">SmartTorch widget</string>
-    <string name="widget_seconds">s</string>
     <string name="notify_title">Smart Torch is turned on</string>
-    <string name="notify_until_stop_shaking">and will be on until you stop shaking the gadget</string>
+    <string name="notify_until_stop_shaking">and will work while being shaked</string>
     <string name="notify_timer">and will turn off after %1$s</string>
     <string name="notify_turn_off">click here to turn it off</string>
 

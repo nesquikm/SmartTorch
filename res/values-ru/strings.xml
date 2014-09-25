@@ -1,18 +1,19 @@
 <resources>
 
     <string name="app_name">УмныйФонарь виджет</string>
-    <string name="widget_seconds">с</string>
     <string name="notify_title">Умный Фонарь включен</string>
-    <string name="notify_until_stop_shaking">и будет включен пока Вы не положите гаджет</string>
+    <string name="notify_until_stop_shaking">и будет работать пока трясется</string>
     <string name="notify_timer">и будет выключен через %1$s</string>
     <string name="notify_turn_off">кликните для выключения</string>
 
     <plurals name="min">
         <item quantity="one">%d м</item>
+        <item quantity="few">%d м</item>
         <item quantity="many">%d м</item>
         </plurals>
     <plurals name="sec">
         <item quantity="one">%d с</item>
+        <item quantity="few">%d с</item>
         <item quantity="many">%d с</item>
     </plurals>
 
@@ -25,7 +26,7 @@
     <string name="calibration">Калибровка</string>
     <string name="calibrate_do_not_touch">Пожалуйста, не трогайте Ваш гаджет!</string>
     <string name="calibrate_preparing">подготовка…</string>
-    <string name="calibration_timer">%1$с осталось</string>
+    <string name="calibration_timer">%1$s осталось</string>
     <string name="calibration_cancelled">Калибровка была прервана</string>
     <string name="calibrated_successful">Успешно откалибровано</string>
 

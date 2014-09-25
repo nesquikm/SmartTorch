@@ -10,13 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-// TODO: 20. Test: why service stay on after config activity shown (when double-click when toch is on)?
-
-// TODO: 03. set correct icon sizes
-// TODO: 04. set as large as possible large icon for lockscreen
-// TODO: 20. automatically lock screen after turn on (configurable).
+// TODO: 04. set as large as possible large widget for lockscreen
+// TODO: 20. Feature? automatically lock screen after turn on (configurable).
 // TODO: 19. update widget when shaking/timer
-// TODO: 05. remove/change Log.v (sss)
 
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";

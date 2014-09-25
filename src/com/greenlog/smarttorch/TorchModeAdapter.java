@@ -1,15 +1,9 @@
 package com.greenlog.smarttorch;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnDragListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -145,45 +139,45 @@ public class TorchModeAdapter extends BaseAdapter {
 
 		// TODO: 02. Do we support drag'n'drop?
 		// TODO: 02. What should i pass as tmp?!
-		final String tmp = "";
-		view.setOnLongClickListener(new OnLongClickListener() {
-			@Override
-			public boolean onLongClick(final View v) {
-				final ClipData.Item item = new ClipData.Item(tmp);
-				final String[] mimeTypes = { ClipDescription.MIMETYPE_TEXT_PLAIN };
-				final ClipData dragData = new ClipData(tmp, mimeTypes, item);
-				v.startDrag(dragData, // the data to be dragged
-						new View.DragShadowBuilder(v), // the drag shadow
-														// builder
-						torchMode, // no need to use local data
-						0 // flags (not currently used, set to 0)
-				);
-				Log.v("sss", "start drag: " + tmp);
-
-				return false;
-			}
-		});
-		view.setOnDragListener(new OnDragListener() {
-			@Override
-			public boolean onDrag(final View v, final DragEvent event) {
-				switch (event.getAction()) {
-				case DragEvent.ACTION_DRAG_STARTED:
-					Log.v("sss",
-							"drag started "
-									+ ((TorchMode) event.getLocalState())
-											.getTimeoutSec());
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					Log.v("sss",
-							"drag ended "
-									+ ((TorchMode) event.getLocalState())
-											.getTimeoutSec() + " result "
-									+ event.getResult());
-					break;
-				}
-				return false;
-			}
-		});
+		// final String tmp = "";
+		// view.setOnLongClickListener(new OnLongClickListener() {
+		// @Override
+		// public boolean onLongClick(final View v) {
+		// final ClipData.Item item = new ClipData.Item(tmp);
+		// final String[] mimeTypes = { ClipDescription.MIMETYPE_TEXT_PLAIN };
+		// final ClipData dragData = new ClipData(tmp, mimeTypes, item);
+		// v.startDrag(dragData, // the data to be dragged
+		// new View.DragShadowBuilder(v), // the drag shadow
+		// // builder
+		// torchMode, // no need to use local data
+		// 0 // flags (not currently used, set to 0)
+		// );
+		// Log.v("sss", "start drag: " + tmp);
+		//
+		// return false;
+		// }
+		// });
+		// view.setOnDragListener(new OnDragListener() {
+		// @Override
+		// public boolean onDrag(final View v, final DragEvent event) {
+		// switch (event.getAction()) {
+		// case DragEvent.ACTION_DRAG_STARTED:
+		// Log.v("sss",
+		// "drag started "
+		// + ((TorchMode) event.getLocalState())
+		// .getTimeoutSec());
+		// break;
+		// case DragEvent.ACTION_DRAG_ENDED:
+		// Log.v("sss",
+		// "drag ended "
+		// + ((TorchMode) event.getLocalState())
+		// .getTimeoutSec() + " result "
+		// + event.getResult());
+		// break;
+		// }
+		// return false;
+		// }
+		// });
 		return view;
 	}
 

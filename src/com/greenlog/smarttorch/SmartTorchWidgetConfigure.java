@@ -22,9 +22,6 @@ import android.widget.Toast;
 
 import com.greenlog.smarttorch.ShakeSensitivityCalibrateDialog.OnCalibratedListener;
 
-// TODO: 03. Remove <action android:name="android.intent.action.MAIN" /> and <category android:name="android.intent.category.LAUNCHER" from manifest 
-// TODO: 01. Orientation change tests!
-
 public class SmartTorchWidgetConfigure extends Activity {
 	private static final String TAG = SmartTorchWidgetConfigure.class
 			.getSimpleName();
