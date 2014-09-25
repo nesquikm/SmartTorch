@@ -12,7 +12,6 @@ import android.os.Handler;
 
 // TODO: 20. Test: why service stay on after config activity shown (when double-click when toch is on)?
 
-// TODO: 03. android:previewImage="@drawable/preview"
 // TODO: 03. set correct icon sizes
 // TODO: 04. set as large as possible large icon for lockscreen
 // TODO: 20. automatically lock screen after turn on (configurable).
@@ -27,7 +26,8 @@ public class SmartTorchWidget extends AppWidgetProvider {
 	private static ClickCatchRunnable mClickCatchRunnable = null;
 
 	@Override
-	public void onReceive(final Context context, final Intent intent) {
+	public synchronized void onReceive(final Context context,
+			final Intent intent) {
 		switch (intent.getAction()) {
 		case CLICK_ACTION_LED_ON:
 		case CLICK_ACTION_LED_OFF: {

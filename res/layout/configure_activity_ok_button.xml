@@ -6,5 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true"
     android:text="@android:string/ok"
     android:textColor="@android:color/white" />

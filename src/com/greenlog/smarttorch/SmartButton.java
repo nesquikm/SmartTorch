@@ -48,6 +48,11 @@ public class SmartButton extends ImageView {
 		return true;
 	}
 
+	@Override
+	public boolean performClick() {
+		return super.performClick();
+	}
+
 	private boolean isEventInView(final MotionEvent event) {
 		return (event.getX() >= 0 && event.getY() >= 0
 				&& event.getX() < getWidth() && event.getY() < getHeight());

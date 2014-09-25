@@ -1,16 +1,15 @@
 <resources>
 
+    <string name="infinity" translatable="false">∞</string>
+    <string name="timer_time" translatable="false">%1$s%2$s</string>
+    
+    
     <string name="app_name">SmartTorch widget</string>
-    <string name="infinity">∞</string>
     <string name="widget_seconds">s</string>
-
-    <string name="timer_time">%1$s%2$s</string>
-    
     <string name="notify_title">Smart Torch is turned on</string>
-    <string name="notify_until_stop_shaking">and will be on until you stop shaking the phone</string>
-    
+    <string name="notify_until_stop_shaking">and will be on until you stop shaking the gadget</string>
     <string name="notify_timer">and will turn off after %1$s</string>
-    <string name="notify_turn_off">and you can turn it off by clicking here</string>
+    <string name="notify_turn_off">click here to turn it off</string>
 
     <plurals name="min">
         <item quantity="other">%d m</item>
@@ -18,22 +17,18 @@
     <plurals name="sec">
         <item quantity="other">%d s</item>
     </plurals>
-    
-    <string name="cant_turn_on">Can\'t turn on the torch now</string>
-    <string name="double_click_to_configure">Double-click widget to configure it again</string>
-    
+
+    <string name="cant_turn_on">Can\'t turn on the torch now: your camera is busy</string>
+    <string name="double_click_to_configure">Double-click the widget to configure it again</string>
     <string name="configure_activity_title">SmartTorch configuration</string>
     <string name="configure_until_stop_shaking">shake sensor</string>
-    
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
     <string name="configure_dialog_to_configure">To calibrate the shake sensor put the gadget on the table, click OK, and wait 5 seconds</string>
-    
     <string name="calibration">Calibration</string>
     <string name="calibrate_do_not_touch">Please, do not touch your gadget!</string>
     <string name="calibrate_preparing">preparing…</string>
     <string name="calibration_timer">%1$s remaining</string>
-    
     <string name="calibration_cancelled">Calibration was cancelled</string>
     <string name="calibrated_successful">Calibrated successful</string>
-    
+
 </resources>

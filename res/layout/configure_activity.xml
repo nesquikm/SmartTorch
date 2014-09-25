@@ -15,14 +15,16 @@
             android:layout_centerHorizontal="true"
             android:loopViews="true" />
 
-        <include layout="@layout/configure_activity_ok_button"/>
+        <include layout="@layout/configure_activity_ok_button" />
 
         <com.greenlog.smarttorch.SmartButton
             android:id="@+id/trash_button"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/stack_view"
+            android:layout_toEndOf="@id/stack_view"
             android:padding="8dp"
             android:src="@drawable/trash" />
 
@@ -31,7 +33,9 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_toLeftOf="@id/stack_view"
+            android:layout_toStartOf="@id/stack_view"
             android:padding="8dp"
             android:src="@drawable/add" />
 
@@ -40,21 +44,22 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="8dp"
             android:background="@drawable/widget_group_background"
             android:orientation="vertical"
-            android:padding="8dp"
-            android:layout_margin="8dp" >
+            android:padding="8dp" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/configure_shaking_sensitivity"/>
+                android:text="@string/configure_shaking_sensitivity" />
 
             <com.greenlog.smarttorch.SmartSpinner
                 android:id="@+id/accelerometer_sens_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown"/>
+                android:spinnerMode="dropdown" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -62,6 +67,7 @@
         android:id="@+id/flying_torch"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:contentDescription="@null"
         android:src="@drawable/big_back_off"
         android:visibility="invisible" />
 

@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
-// TODO: 09. Test with clean configuration
+// TODO: 01. Test with clean configuration
 
 public class SettingsManager {
-	private static final String TAG = SettingsManager.class.getSimpleName();
-
 	private static final String PREFERENCE_FILE_KEY = "com.greenlog.smarttorch.PREFERENCE_FILE_KEY";
 
 	private static final String TORCH_MODE_COUNT = "torch_mode_count";

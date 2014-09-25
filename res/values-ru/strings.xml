@@ -1,0 +1,32 @@
+<resources>
+
+    <string name="app_name">УмныйФонарь виджет</string>
+    <string name="widget_seconds">с</string>
+    <string name="notify_title">Умный Фонарь включен</string>
+    <string name="notify_until_stop_shaking">и будет включен пока Вы не положите гаджет</string>
+    <string name="notify_timer">и будет выключен через %1$s</string>
+    <string name="notify_turn_off">кликните для выключения</string>
+
+    <plurals name="min">
+        <item quantity="one">%d м</item>
+        <item quantity="many">%d м</item>
+        </plurals>
+    <plurals name="sec">
+        <item quantity="one">%d с</item>
+        <item quantity="many">%d с</item>
+    </plurals>
+
+    <string name="cant_turn_on">Не могу включить фонарь</string>
+    <string name="double_click_to_configure">Дважды кликните виджет для того, чтобы настроить его заново</string>
+    <string name="configure_activity_title">Настройка Умного Фонаря</string>
+    <string name="configure_until_stop_shaking">датчик тряски</string>
+    <string name="configure_shaking_sensitivity">Чувствительность к тряске</string>
+    <string name="configure_dialog_to_configure">Чтобы откалибровать чувствительность к тряске, положите гаджет на стол, кликните OK и подождите 5 секунд</string>
+    <string name="calibration">Калибровка</string>
+    <string name="calibrate_do_not_touch">Пожалуйста, не трогайте Ваш гаджет!</string>
+    <string name="calibrate_preparing">подготовка…</string>
+    <string name="calibration_timer">%1$с осталось</string>
+    <string name="calibration_cancelled">Калибровка была прервана</string>
+    <string name="calibrated_successful">Успешно откалибровано</string>
+
+</resources>
