@@ -117,6 +117,9 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			break;
 		case SERVICE_ACTION_UPDATE_WIDGETS_CONFIG:
 			updateWidgetsConfig();
+			if (!mIsLedOn) {
+				stopSelf();
+			}
 			break;
 		}
 		return START_NOT_STICKY;
