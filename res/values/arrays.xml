@@ -11,13 +11,13 @@
         <item>300</item>
     </integer-array>
 
-    <string-array name="default_modes">
+    <string-array name="default_modes" translatable="false">
         <item>0,false</item>
         <item>15,true</item>
         <item>60,false</item>
     </string-array>
 
-    <string name="default_mode">5,true</string>
+    <string name="default_mode" translatable="false">5,true</string>
     
     <string-array name="accelerometer_sensitivity_modes">
         <item>Low</item>
