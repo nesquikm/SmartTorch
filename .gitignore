@@ -27,3 +27,10 @@ proguard/
 
 # Log Files
 *.log
+
+# Vim backup files
+*.*~
+
+# Vim swap files
+*.swp
+
