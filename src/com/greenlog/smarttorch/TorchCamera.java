@@ -129,4 +129,23 @@ public class TorchCamera {
 		mOverlay = null;
 		mSurfaceView = null;
 	}
+
+	public void checkState() {
+		// TODO: fix for HTC devices: they turn off the camera after screen
+		// lock. Maybe, not only HTC?
+		if (("HTC").contentEquals(android.os.Build.MANUFACTURER)) {
+			final Parameters parameters = mCamera.getParameters();
+			// if
+			// (!parameters.getFlashMode().equals(Parameters.FLASH_MODE_TORCH))
+			// {
+			parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
+			mCamera.setParameters(parameters);
+
+			parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
+			mCamera.setParameters(parameters);
+
+			mCamera.startPreview();
+			// }
+		}
+	}
 }

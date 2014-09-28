@@ -10,9 +10,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -59,6 +61,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private SettingsManager mSettingsManager;
 
+	private ScreenReceiver mScreenReceiver;
+
 	@Override
 	public void onCreate() {
 		Log.v(TAG, "onCreate");
@@ -74,6 +78,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 		mSettingsManager = new SettingsManager(this);
 
+		startScreenReceiver();
+
 		super.onCreate();
 	}
 
@@ -81,6 +87,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	public void onDestroy() {
 		Log.v(TAG, "onDestroy");
 		mNotificationManager.cancelAll();
+
+		stopScreenReceiver();
 
 		stopSensor();
 		stopTimer();
@@ -339,5 +347,33 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onAccuracyChanged(final Sensor sensor, final int accuracy) {
+	}
+
+	private void startScreenReceiver() {
+		mScreenReceiver = new ScreenReceiver();
+		registerReceiver(mScreenReceiver, new IntentFilter(
+				Intent.ACTION_SCREEN_OFF));
+	}
+
+	private void stopScreenReceiver() {
+		if (mScreenReceiver != null) {
+			unregisterReceiver(mScreenReceiver);
+			mScreenReceiver = null;
+		}
+	}
+
+	private class ScreenReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(final Context context, final Intent intent) {
+			if (intent.getAction() != null) {
+				switch (intent.getAction()) {
+				case Intent.ACTION_SCREEN_OFF:
+					if (mIsLedOn && mTorchCamera != null) {
+						mTorchCamera.checkState();
+					}
+					break;
+				}
+			}
+		}
 	}
 }
