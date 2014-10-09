@@ -179,7 +179,7 @@ public class Utils {
 					Sample last = longestVector;
 					for (int i = longestVectorLocation; i >= 0; i--) {
 						final Sample s = mQueue.get(i);
-						if ((Math.abs(last.getTiveStamp() - s.getTiveStamp()) > KNOCK_TIMEOUT_MIN)
+						if ((Math.abs(last.getTimeStamp() - s.getTimeStamp()) > KNOCK_TIMEOUT_MIN)
 								&& (getAbsAngleBetweenVectors(last.getVector(),
 										s.getVector()) * 180 / Math.PI < 30)) {
 							last = s;
@@ -189,7 +189,7 @@ public class Utils {
 					last = longestVector;
 					for (int i = longestVectorLocation; i < mQueue.size(); i++) {
 						final Sample s = mQueue.get(i);
-						if ((Math.abs(last.getTiveStamp() - s.getTiveStamp()) > KNOCK_TIMEOUT_MIN)
+						if ((Math.abs(last.getTimeStamp() - s.getTimeStamp()) > KNOCK_TIMEOUT_MIN)
 								&& (getAbsAngleBetweenVectors(last.getVector(),
 										s.getVector()) * 180 / Math.PI < 30)) {
 							last = s;
@@ -216,7 +216,7 @@ public class Utils {
 			private void removeOld(final long now) {
 				while (!mQueue.isEmpty()) {
 					final Sample sample = mQueue.get(0);
-					if (now - sample.getTiveStamp() > WINDOW_SIZE) {
+					if (now - sample.getTimeStamp() > WINDOW_SIZE) {
 						mQueue.remove(0);
 					} else {
 						break;
@@ -236,7 +236,7 @@ public class Utils {
 				mLength = getVectorLength(mVector);
 			}
 
-			public long getTiveStamp() {
+			public long getTimeStamp() {
 				return mTimeStamp;
 			}
 
