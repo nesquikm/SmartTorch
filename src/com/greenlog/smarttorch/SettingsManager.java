@@ -16,6 +16,8 @@ public class SettingsManager {
 	private static final String SHAKE_SENSITIVITY_MODE = "shake_sensitivity_mode";
 	private static final String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "shake_sensitivity_calibrated_value";
 
+	private static final String KNOCK_DETECTOR_EBABLED = "knock_detector_ebabled";
+
 	public final static int MAX_MODE_COUNT = 5;
 
 	public final static int SHAKE_SENSITIVITY_LOW = 0;
@@ -124,5 +126,15 @@ public class SettingsManager {
 		case SHAKE_SENSITIVITY_CALIBRATED:
 			return readShakeSensorSensitivityCalibratedValue();
 		}
+	}
+
+	public void writeKnockDetectorEnabled(final boolean enabled) {
+		final SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putBoolean(KNOCK_DETECTOR_EBABLED, enabled);
+		editor.commit();
+	}
+
+	public boolean readKnockDetectorEnabled() {
+		return mSharedPreferences.getBoolean(KNOCK_DETECTOR_EBABLED, true);
 	}
 }

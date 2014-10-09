@@ -24,11 +24,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+// TODO: 00. timer (shake)(bz bz)-> infinity -> (shake)(bzzz) -> timeout! -> off
 public class SmartTorchService extends Service implements SensorEventListener {
 	private static final String TAG = SmartTorchService.class.getSimpleName();
 
@@ -57,11 +59,17 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private PowerManager.WakeLock mWakeLock = null;
 
-	private Utils.AccelerationInterpolator mAccelerationInterpolator;
+	private Utils.AccelerationHelper mAccelerationHelper;
 
 	private SettingsManager mSettingsManager;
+	private float mSensitivityValue;
+	private boolean mIsKnockDetectorEnabled;
 
 	private ScreenReceiver mScreenReceiver;
+
+	private final static long[] VIBRATE_PATTERN_SWITCH_TO_INF = { 0, 200, 200,
+			200, 0 };
+	private final static long[] VIBRATE_PATTERN_SWITCH_OFF = { 0, 400, 0 };
 
 	@Override
 	public void onCreate() {
@@ -72,11 +80,14 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mAccelerometer = mSensorManager
 				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-		mAccelerationInterpolator = new Utils.AccelerationInterpolator();
+		mAccelerationHelper = new Utils.AccelerationHelper();
 
 		mTorchCamera = new TorchCamera(this);
 
 		mSettingsManager = new SettingsManager(this);
+		// precache settings
+		mSensitivityValue = mSettingsManager.getSensitivityValue();
+		mIsKnockDetectorEnabled = mSettingsManager.readKnockDetectorEnabled();
 
 		startScreenReceiver();
 
@@ -328,11 +339,12 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	}
 
 	private void startSensor() {
-		if (mTorchMode.isInfinitely() || !mTorchMode.isShakeSensorEnabled()) {
+		if ((mTorchMode.isInfinitely() || !mTorchMode.isShakeSensorEnabled())
+				&& !mIsKnockDetectorEnabled) {
 			return;
 		}
 		mSensorManager.registerListener(this, mAccelerometer,
-				SensorManager.SENSOR_DELAY_UI);
+				SensorManager.SENSOR_DELAY_FASTEST);
 	}
 
 	private void stopSensor() {
@@ -341,8 +353,25 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(final SensorEvent event) {
-		mIsShaking = mAccelerationInterpolator.getAcceleration(event.values) > mSettingsManager
-				.getSensitivityValue();
+		mAccelerationHelper.setEvent(event.values, event.timestamp);
+
+		final float acceleration = mAccelerationHelper.getLinearAcceleration();
+
+		mIsShaking = acceleration > mSensitivityValue;
+
+		if (mIsKnockDetectorEnabled) {
+			switch (mAccelerationHelper.getKnockCount()) {
+			case 2:
+				// mAccelerationHelper.pauseKnockCount(600);
+				vibrate(VIBRATE_PATTERN_SWITCH_TO_INF);
+				break;
+			case 3:
+				// mAccelerationHelper.pauseKnockCount(600);
+				vibrate(VIBRATE_PATTERN_SWITCH_OFF);
+				break;
+			}
+		}
+
 	}
 
 	@Override
@@ -375,5 +404,10 @@ public class SmartTorchService extends Service implements SensorEventListener {
 				}
 			}
 		}
+	}
+
+	private void vibrate(final long[] pattern) {
+		final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		vibrator.vibrate(pattern, -1);
 	}
 }

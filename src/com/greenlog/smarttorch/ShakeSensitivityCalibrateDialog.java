@@ -40,7 +40,7 @@ public class ShakeSensitivityCalibrateDialog extends Dialog implements
 
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	private Utils.AccelerationInterpolator mAccelerationInterpolator;
+	private Utils.AccelerationHelper mAccelerationHelper;
 	private boolean mInCalibration = false;
 
 	private static final float MAX_ACCELERATION_TO_CANCEL = 1.0f;
@@ -139,7 +139,7 @@ public class ShakeSensitivityCalibrateDialog extends Dialog implements
 		mAccelerometer = mSensorManager
 				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-		mAccelerationInterpolator = new Utils.AccelerationInterpolator();
+		mAccelerationHelper = new Utils.AccelerationHelper();
 
 		mSensorManager.registerListener(this, mAccelerometer,
 				SensorManager.SENSOR_DELAY_UI);
@@ -198,8 +198,9 @@ public class ShakeSensitivityCalibrateDialog extends Dialog implements
 			return;
 		}
 
-		final float acceleration = mAccelerationInterpolator
-				.getAcceleration(event.values);
+		mAccelerationHelper.setEvent(event.values, event.timestamp);
+		final float acceleration = mAccelerationHelper.getLinearAcceleration();
+
 		if (acceleration > MAX_ACCELERATION_TO_CANCEL) {
 			cancel();
 		}
