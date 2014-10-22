@@ -19,6 +19,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 	private final Context mContext;
 
 	private TorchModes mTorchModes;
+	private boolean mKnockControlEnabled;
 
 	private final SettingsManager mSettingsManager;
 
@@ -27,6 +28,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		mSettingsManager = new SettingsManager(context);
 
 		mTorchModes = mSettingsManager.readTorchModes();
+		mKnockControlEnabled = mSettingsManager.readKnockControlEnabled();
 	}
 
 	@Override
@@ -36,6 +38,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 	@Override
 	public void onDataSetChanged() {
 		mTorchModes = mSettingsManager.readTorchModes();
+		mKnockControlEnabled = mSettingsManager.readKnockControlEnabled();
 	}
 
 	@Override
@@ -57,8 +60,14 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 		rv.setTextViewText(R.id.stackview_item_text, Utils.formatTimerTime(
 				mContext, torchMode.getTimeoutSec(), true));
-		rv.setViewVisibility(R.id.stackview_item_icon,
-				torchMode.isShakeSensorEnabled() ? View.VISIBLE : View.GONE);
+
+		rv.setViewVisibility(R.id.stackview_item_icon, torchMode
+				.isShakeSensorEnabled() ? View.VISIBLE : View.INVISIBLE);
+
+		rv.setTextViewText(R.id.stackview_item_knocks,
+				Integer.toString(torchMode.getKnockCount()));
+		rv.setViewVisibility(R.id.stackview_item_knocks, mKnockControlEnabled
+				&& torchMode.isKnockEnabled() ? View.VISIBLE : View.INVISIBLE);
 
 		final Bundle extras = torchMode.getBundle();
 
