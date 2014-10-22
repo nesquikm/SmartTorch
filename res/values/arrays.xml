@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <integer-array name="timer_values">
+    <integer-array name="timer_values" translatable="false">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -11,7 +11,7 @@
         <item>300</item>
     </integer-array>
     
-    <integer-array name="knock_count_values">
+    <integer-array name="knock_count_values" translatable="false">
         <item>0</item>
         <item>2</item>
         <item>3</item>

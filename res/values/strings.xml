@@ -19,7 +19,7 @@
         <item quantity="other">%d knocks</item>
     </plurals>
 
-    <string name="knock_disabled">-- knocks</string>
+    <string name="knock_disabled">disabled</string>
     <string name="cant_turn_on">Can\'t turn on the torch now: your camera is busy</string>
     <string name="double_click_to_configure">Double-click the widget to configure it again</string>
     <string name="configure_activity_title">SmartTorch configuration</string>

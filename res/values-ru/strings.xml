@@ -19,11 +19,11 @@
     <plurals name="knocks">
         <item quantity="one">%d удар</item>
         <item quantity="two">%d удара</item>
-        <item quantity="few">%d ударов</item>
+        <item quantity="few">%d удара</item>
         <item quantity="many">%d ударов</item>
     </plurals>
 
-    <string name="knock_disabled">-- ударов</string>
+    <string name="knock_disabled">выкл</string>
     <string name="cant_turn_on">Не могу включить фонарь</string>
     <string name="double_click_to_configure">Дважды кликните виджет для того, чтобы настроить его заново</string>
     <string name="configure_activity_title">Настройка Умного Фонаря</string>
