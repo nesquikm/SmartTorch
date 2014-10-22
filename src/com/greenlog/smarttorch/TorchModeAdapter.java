@@ -127,7 +127,10 @@ public class TorchModeAdapter extends BaseAdapter {
 				@Override
 				public void onItemSelected(final AdapterView<?> parent,
 						final View view, final int position, final long id) {
-
+					// hide shakeCheckbox when timer == infinity
+					shakeCheckbox
+							.setVisibility((mTimerValues[position] == 0) ? View.INVISIBLE
+									: View.VISIBLE);
 					// save the selected timeout
 					torchMode.setTimeoutSec(mTimerValues[position]);
 				}
@@ -137,11 +140,6 @@ public class TorchModeAdapter extends BaseAdapter {
 				}
 			});
 		}
-
-		// hide shakeCheckbox when timer == infinity
-		shakeCheckbox
-				.setVisibility((mTimerValues[position] == 0) ? View.INVISIBLE
-						: View.VISIBLE);
 
 		int selectedTimePosition = 0;
 		for (int i = 0; i < mTimerValues.length; i++) {
