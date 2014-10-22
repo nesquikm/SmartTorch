@@ -23,8 +23,8 @@
             android:layout_height="80dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/stack_view"
             android:layout_toEndOf="@id/stack_view"
+            android:layout_toRightOf="@id/stack_view"
             android:padding="8dp"
             android:src="@drawable/trash" />
 
@@ -46,20 +46,46 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_margin="8dp"
-            android:background="@drawable/widget_group_background"
-            android:orientation="vertical"
-            android:padding="8dp" >
+            android:orientation="vertical" >
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/configure_shaking_sensitivity" />
+                android:background="@drawable/widget_group_background"
+                android:orientation="vertical"
+                android:padding="8dp" >
 
-            <com.greenlog.smarttorch.SmartSpinner
-                android:id="@+id/accelerometer_sens_picker"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/configure_knock_control" />
+
+                <CheckBox
+                    android:id="@+id/knock_control_enabled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/configure_enabled" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown" />
+                android:background="@drawable/widget_group_background"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:layout_marginTop="8dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/configure_shaking_sensitivity" />
+
+                <com.greenlog.smarttorch.SmartSpinner
+                    android:id="@+id/accelerometer_sens_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 

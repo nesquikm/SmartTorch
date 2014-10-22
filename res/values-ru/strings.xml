@@ -10,18 +10,27 @@
         <item quantity="one">%d м</item>
         <item quantity="few">%d м</item>
         <item quantity="many">%d м</item>
-        </plurals>
+    </plurals>
     <plurals name="sec">
         <item quantity="one">%d с</item>
         <item quantity="few">%d с</item>
         <item quantity="many">%d с</item>
     </plurals>
+    <plurals name="knocks">
+        <item quantity="one">%d удар</item>
+        <item quantity="two">%d удара</item>
+        <item quantity="few">%d ударов</item>
+        <item quantity="many">%d ударов</item>
+    </plurals>
 
+    <string name="knock_disabled">-- ударов</string>
     <string name="cant_turn_on">Не могу включить фонарь</string>
     <string name="double_click_to_configure">Дважды кликните виджет для того, чтобы настроить его заново</string>
     <string name="configure_activity_title">Настройка Умного Фонаря</string>
     <string name="configure_until_stop_shaking">датчик тряски</string>
     <string name="configure_shaking_sensitivity">Чувствительность к тряске</string>
+    <string name="configure_knock_control">Управление ударами</string>
+    <string name="configure_enabled">включено</string>
     <string name="configure_dialog_to_configure">Чтобы откалибровать чувствительность к тряске, положите гаджет на стол, кликните OK и подождите 5 секунд</string>
     <string name="calibration">Калибровка</string>
     <string name="calibrate_do_not_touch">Пожалуйста, не трогайте Ваш гаджет!</string>

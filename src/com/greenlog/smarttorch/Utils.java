@@ -32,13 +32,21 @@ public class Utils {
 		}
 	}
 
+	public static String formatKnockCount(final Context context, final int count) {
+		final Resources res = context.getResources();
+		if (count == 0) {
+			return res.getString(R.string.knock_disabled);
+		}
+		return res.getQuantityString(R.plurals.knocks, count, count);
+	}
+
 	public static class AccelerationHelper {
 		private final static float ACCELERATION_FILTER_ALPHA_SLOW = 0.2f;
 		private final static float ACCELERATION_FILTER_ALPHA_FAST = 1f;
 
-		private final float KNOCK_ACCELERATION_HIGH_THRESHOLD = 5.0f;
+		private final float KNOCK_ACCELERATION_HIGH_THRESHOLD = 9.0f;
 
-		private final long WINDOW_SIZE = 700 * 1000 * 1000;
+		private final long WINDOW_SIZE = 900 * 1000 * 1000;
 		private final long KNOCK_TIMEOUT_MIN = 80 * 1000 * 1000;
 
 		private final float mAccelerationSlow[] = new float[3];

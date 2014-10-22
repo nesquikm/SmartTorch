@@ -12,7 +12,6 @@ import android.os.Handler;
 
 // TODO: 04. set as large as possible large widget for lockscreen
 // TODO: 20. Feature? automatically lock screen after turn on (configurable).
-// TODO: 19. update widget when shaking/timer
 
 public class SmartTorchWidget extends AppWidgetProvider {
 	public static final String CLICK_ACTION_LED_ON = "com.greenlog.smarttorch.CLICK_ACTION_LED_ON";

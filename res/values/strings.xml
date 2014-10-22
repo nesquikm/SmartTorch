@@ -2,7 +2,6 @@
 
     <string name="infinity" translatable="false">∞</string>
     <string name="timer_time" translatable="false">%1$s%2$s</string>
-    
     <string name="app_name">SmartTorch widget</string>
     <string name="notify_title">Smart Torch is turned on</string>
     <string name="notify_until_stop_shaking">and will work while being shaked</string>
@@ -15,12 +14,19 @@
     <plurals name="sec">
         <item quantity="other">%d s</item>
     </plurals>
+    <plurals name="knocks">
+        <item quantity="one">%d knock</item>
+        <item quantity="other">%d knocks</item>
+    </plurals>
 
+    <string name="knock_disabled">-- knocks</string>
     <string name="cant_turn_on">Can\'t turn on the torch now: your camera is busy</string>
     <string name="double_click_to_configure">Double-click the widget to configure it again</string>
     <string name="configure_activity_title">SmartTorch configuration</string>
     <string name="configure_until_stop_shaking">shake sensor</string>
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
+    <string name="configure_knock_control">Knock control</string>
+    <string name="configure_enabled">enabled</string>
     <string name="configure_dialog_to_configure">To calibrate the shake sensor put the gadget on the table, click OK, and wait 5 seconds</string>
     <string name="calibration">Calibration</string>
     <string name="calibrate_do_not_touch">Please, do not touch your gadget!</string>

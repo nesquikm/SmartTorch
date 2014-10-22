@@ -20,6 +20,9 @@ public class TorchModeAdapter extends BaseAdapter {
 	private final LayoutInflater mLayoutInflater;
 	private final int[] mTimerValues;
 	private final ArrayAdapter<String> mTimerValuesAdapter;
+	private final int[] mKnockCountValues;
+	private final ArrayAdapter<String> mKnockCountValuesAdapter;
+	private boolean mShowKnockCount;
 
 	private final SettingsManager mSettingsManager;
 
@@ -43,6 +46,17 @@ public class TorchModeAdapter extends BaseAdapter {
 					mTimerValues[i], true));
 		}
 		mTimerValuesAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		mKnockCountValues = mContext.getResources().getIntArray(
+				R.array.knock_count_values);
+		mKnockCountValuesAdapter = new ArrayAdapter<String>(mContext,
+				android.R.layout.simple_spinner_item);
+		for (int i = 0; i < mKnockCountValues.length; i++) {
+			mKnockCountValuesAdapter.add(Utils.formatKnockCount(mContext,
+					mKnockCountValues[i]));
+		}
+		mKnockCountValuesAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		if (bundle != null) {
@@ -113,10 +127,7 @@ public class TorchModeAdapter extends BaseAdapter {
 				@Override
 				public void onItemSelected(final AdapterView<?> parent,
 						final View view, final int position, final long id) {
-					// hide shakeCheckbox when timer == infinity
-					shakeCheckbox
-							.setVisibility((mTimerValues[position] == 0) ? View.INVISIBLE
-									: View.VISIBLE);
+
 					// save the selected timeout
 					torchMode.setTimeoutSec(mTimerValues[position]);
 				}
@@ -126,6 +137,11 @@ public class TorchModeAdapter extends BaseAdapter {
 				}
 			});
 		}
+
+		// hide shakeCheckbox when timer == infinity
+		shakeCheckbox
+				.setVisibility((mTimerValues[position] == 0) ? View.INVISIBLE
+						: View.VISIBLE);
 
 		int selectedTimePosition = 0;
 		for (int i = 0; i < mTimerValues.length; i++) {
@@ -137,47 +153,56 @@ public class TorchModeAdapter extends BaseAdapter {
 
 		timePicker.setSelection(selectedTimePosition, false);
 
-		// TODO: 02. Do we support drag'n'drop?
-		// TODO: 02. What should i pass as tmp?!
-		// final String tmp = "";
-		// view.setOnLongClickListener(new OnLongClickListener() {
-		// @Override
-		// public boolean onLongClick(final View v) {
-		// final ClipData.Item item = new ClipData.Item(tmp);
-		// final String[] mimeTypes = { ClipDescription.MIMETYPE_TEXT_PLAIN };
-		// final ClipData dragData = new ClipData(tmp, mimeTypes, item);
-		// v.startDrag(dragData, // the data to be dragged
-		// new View.DragShadowBuilder(v), // the drag shadow
-		// // builder
-		// torchMode, // no need to use local data
-		// 0 // flags (not currently used, set to 0)
-		// );
-		// Log.v("sss", "start drag: " + tmp);
-		//
-		// return false;
-		// }
-		// });
-		// view.setOnDragListener(new OnDragListener() {
-		// @Override
-		// public boolean onDrag(final View v, final DragEvent event) {
-		// switch (event.getAction()) {
-		// case DragEvent.ACTION_DRAG_STARTED:
-		// Log.v("sss",
-		// "drag started "
-		// + ((TorchMode) event.getLocalState())
-		// .getTimeoutSec());
-		// break;
-		// case DragEvent.ACTION_DRAG_ENDED:
-		// Log.v("sss",
-		// "drag ended "
-		// + ((TorchMode) event.getLocalState())
-		// .getTimeoutSec() + " result "
-		// + event.getResult());
-		// break;
-		// }
-		// return false;
-		// }
-		// });
+		final Spinner knockCountPicker = (Spinner) view
+				.findViewById(R.id.knock_count_picker);
+		// do it only once
+		if (convertView == null) {
+			knockCountPicker.setAdapter(mKnockCountValuesAdapter);
+
+			knockCountPicker
+					.setOnItemSelectedListener(new OnItemSelectedListener() {
+						@Override
+						public void onItemSelected(final AdapterView<?> parent,
+								final View view, final int position,
+								final long id) {
+							// remove duplicated
+							boolean removed = false;
+							if (mKnockCountValues[position] > 0) {
+								for (int i = 0; i < mTorchModes.size(); i++) {
+									if (torchMode != mTorchModes.get(i)
+											&& mTorchModes.get(i)
+													.getKnockCount() == mKnockCountValues[position]) {
+										mTorchModes.get(i).setKnockCount(0);
+										removed = true;
+									}
+								}
+							}
+							torchMode
+									.setKnockCount(mKnockCountValues[position]);
+							if (removed) {
+								notifyDataSetChanged();
+							}
+						}
+
+						@Override
+						public void onNothingSelected(
+								final AdapterView<?> parent) {
+						}
+					});
+		}
+
+		int selectedKnockCountPosition = 0;
+		for (int i = 0; i < mKnockCountValues.length; i++) {
+			if (mKnockCountValues[i] == torchMode.getKnockCount()) {
+				selectedKnockCountPosition = i;
+				break;
+			}
+		}
+
+		knockCountPicker.setSelection(selectedKnockCountPosition, false);
+		knockCountPicker.setVisibility(mShowKnockCount ? View.VISIBLE
+				: View.INVISIBLE);
+
 		return view;
 	}
 
@@ -200,6 +225,11 @@ public class TorchModeAdapter extends BaseAdapter {
 
 	public void remove(final int position) {
 		mTorchModes.remove(position);
+		notifyDataSetChanged();
+	}
+
+	public void setShowKnockCount(final boolean showKnockCount) {
+		mShowKnockCount = showKnockCount;
 		notifyDataSetChanged();
 	}
 }

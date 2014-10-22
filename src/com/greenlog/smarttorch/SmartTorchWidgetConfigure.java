@@ -16,6 +16,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.StackView;
 import android.widget.Toast;
@@ -36,6 +39,7 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 	private TorchModeAdapter mTorchModeAdapter;
 
+	private CheckBox mKnockControlCheckBox;
 	private StackView mStackView;
 	private SmartButton mTrashButton;
 	private SmartButton mAddButton;
@@ -85,6 +89,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 				mTorchModeAdapter.saveTorchModes();
 				mSettingsManager.writeShakeSensorSensitivity(
 						mLastShakeSensMode, mShakeSensitivityCalibratedValue);
+				mSettingsManager.writeKnockControlEnabled(mKnockControlCheckBox
+						.isChecked());
 				// Update ALL widgets config!
 				SmartTorchService.sendCommandToService(
 						SmartTorchWidgetConfigure.this,
@@ -124,6 +130,20 @@ public class SmartTorchWidgetConfigure extends Activity {
 				mStackView.setSelection(position);
 			}
 		}
+
+		// Knock control checkbox
+		mKnockControlCheckBox = (CheckBox) findViewById(R.id.knock_control_enabled);
+		mKnockControlCheckBox
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(
+							final CompoundButton buttonView,
+							final boolean isChecked) {
+						mTorchModeAdapter.setShowKnockCount(isChecked);
+					}
+				});
+		mKnockControlCheckBox.setChecked(mSettingsManager
+				.readKnockControlEnabled());
 
 		// Trash button
 		mTrashButton = (SmartButton) findViewById(R.id.trash_button);

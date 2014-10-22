@@ -4,24 +4,30 @@
     android:layout_height="210dp"
     android:background="@drawable/big_back_off"
     android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
     <Spinner
-        android:layout_marginTop="30dp"
         android:id="@+id/time_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-        android:maxWidth="120dp" />
+        android:layout_marginTop="16dp"
+        android:maxWidth="120dp"
+        android:spinnerMode="dropdown" />
 
     <CheckBox
-        android:layout_marginTop="16dp"
         android:id="@+id/shake_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="120dp"
-        android:gravity="center_vertical"
+        android:layout_marginTop="4dp"
         android:drawableLeft="@drawable/shake"
-        />
+        android:maxWidth="120dp" />
+
+    <Spinner
+        android:id="@+id/knock_count_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:maxWidth="120dp"
+        android:spinnerMode="dropdown" />
 
 </LinearLayout>

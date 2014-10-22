@@ -30,7 +30,6 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-// TODO: 00. timer (shake)(bz bz)-> infinity -> (shake)(bzzz) -> timeout! -> off
 public class SmartTorchService extends Service implements SensorEventListener {
 	private static final String TAG = SmartTorchService.class.getSimpleName();
 
@@ -40,6 +39,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	public static final String SERVICE_ACTION_UPDATE_WIDGETS_CONFIG = "com.greenlog.smarttorch.SERVICE_ACTION_UPDATE_WIDGETS_CONFIG";
 
 	private static final int NOTIFY_ID = 1;
+
+	private static final long VIBRATE_DURATION = 100;
 
 	private NotificationManager mNotificationManager;
 	private Notification.Builder mNotificationBuilder = null;
@@ -63,13 +64,13 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private SettingsManager mSettingsManager;
 	private float mSensitivityValue;
-	private boolean mIsKnockDetectorEnabled;
+	private boolean mIsKnockControlEnabled;
 
 	private ScreenReceiver mScreenReceiver;
 
-	private final static long[] VIBRATE_PATTERN_SWITCH_TO_INF = { 0, 200, 200,
-			200, 0 };
-	private final static long[] VIBRATE_PATTERN_SWITCH_OFF = { 0, 400, 0 };
+	private TorchModes mTorchModes;
+
+	private boolean mIsStartedForeground = false;
 
 	@Override
 	public void onCreate() {
@@ -87,7 +88,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mSettingsManager = new SettingsManager(this);
 		// precache settings
 		mSensitivityValue = mSettingsManager.getSensitivityValue();
-		mIsKnockDetectorEnabled = mSettingsManager.readKnockDetectorEnabled();
+		mIsKnockControlEnabled = mSettingsManager.readKnockControlEnabled();
+		mTorchModes = mSettingsManager.readTorchModes();
 
 		startScreenReceiver();
 
@@ -117,13 +119,14 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		}
 		switch (intent.getAction()) {
 		case SERVICE_ACTION_TURN_ON:
-			mTorchMode = new TorchMode(intent.getExtras());
-			startSensor();
-			updateTimer(true);
-			final Notification notification = updateNotification();
-			startForeground(NOTIFY_ID, notification);
-			startWakeLock();
-			turnLed(true);
+			setTorchMode(new TorchMode(intent.getExtras()));
+			// mTorchMode = new TorchMode(intent.getExtras());
+			// startSensor();
+			// updateTimer(true);
+			// final Notification notification = updateNotification();
+			// startForeground(NOTIFY_ID, notification);
+			// startWakeLock();
+			// turnLed(true);
 			break;
 		case SERVICE_ACTION_TURN_OFF:
 			stopSelf();
@@ -142,6 +145,15 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			break;
 		}
 		return START_NOT_STICKY;
+	}
+
+	private void setTorchMode(final TorchMode torchMode) {
+		mTorchMode = torchMode;
+		startSensor();
+		updateTimer(true);
+		updateNotification();
+		startWakeLock();
+		turnLed(true);
 	}
 
 	public static void sendCommandToService(final Context context,
@@ -180,10 +192,6 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	}
 
 	private void startWakeLock() {
-		if (mTorchMode.isInfinitely()) {
-			return;
-		}
-
 		if (mWakeLock != null) {
 			return;
 		}
@@ -222,8 +230,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 					if (mRemainSeconds <= 0) {
 						stopSelf();
 					} else {
-						final Notification notification = updateNotification();
-						mNotificationManager.notify(NOTIFY_ID, notification);
+						updateNotification();
 					}
 				}
 			}, 500, 500);
@@ -240,7 +247,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
-	private Notification updateNotification() {
+	private void updateNotification() {
 		final Intent newIntent = new Intent(this, SmartTorchService.class);
 		newIntent.setAction(SERVICE_ACTION_TURN_OFF);
 		final PendingIntent newPendingIntent = PendingIntent.getService(this,
@@ -275,7 +282,12 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			notification = mNotificationBuilder.getNotification();
 		}
 
-		return notification;
+		if (!mIsStartedForeground) {
+			startForeground(NOTIFY_ID, notification);
+			mIsStartedForeground = true;
+		} else {
+			mNotificationManager.notify(NOTIFY_ID, notification);
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -340,7 +352,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private void startSensor() {
 		if ((mTorchMode.isInfinitely() || !mTorchMode.isShakeSensorEnabled())
-				&& !mIsKnockDetectorEnabled) {
+				&& !mIsKnockControlEnabled) {
 			return;
 		}
 		mSensorManager.registerListener(this, mAccelerometer,
@@ -359,19 +371,19 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 		mIsShaking = acceleration > mSensitivityValue;
 
-		if (mIsKnockDetectorEnabled) {
-			switch (mAccelerationHelper.getKnockCount()) {
-			case 2:
-				// mAccelerationHelper.pauseKnockCount(600);
-				vibrate(VIBRATE_PATTERN_SWITCH_TO_INF);
-				break;
-			case 3:
-				// mAccelerationHelper.pauseKnockCount(600);
-				vibrate(VIBRATE_PATTERN_SWITCH_OFF);
-				break;
+		if (mIsKnockControlEnabled) {
+			final int knockCount = mAccelerationHelper.getKnockCount();
+			if (knockCount > 1) {
+				for (int i = 0; i < mTorchModes.size(); i++) {
+					if (mTorchModes.get(i).getKnockCount() == knockCount) {
+						setTorchMode(mTorchModes.get(i));
+						final long duration = vibrate(knockCount);
+						mAccelerationHelper.pauseKnockCount(duration + 100);
+						break;
+					}
+				}
 			}
 		}
-
 	}
 
 	@Override
@@ -406,8 +418,15 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		}
 	}
 
-	private void vibrate(final long[] pattern) {
+	private long vibrate(final int count) {
+		final long pattern[] = new long[count * 2 + 1];
+		for (int i = 0; i < count * 2 + 1; i++) {
+			pattern[i] = (i == 0) ? 0 : VIBRATE_DURATION;
+		}
+
 		final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		vibrator.vibrate(pattern, -1);
+
+		return count * 2 * VIBRATE_DURATION;
 	}
 }

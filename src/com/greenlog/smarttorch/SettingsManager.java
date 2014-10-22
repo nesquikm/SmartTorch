@@ -12,11 +12,12 @@ public class SettingsManager {
 	private static final String TORCH_MODE_COUNT = "torch_mode_count";
 	private static final String TORCH_MODE_TIMEOUT = "torch_mode_timeout_";
 	private static final String TORCH_MODE_SHAKE_SENSOR_ENABLED = "shake_sensor_enabled_";
+	private static final String TORCH_MODE_KNOCK_COUNT = "torch_mode_knock_count_";
 
 	private static final String SHAKE_SENSITIVITY_MODE = "shake_sensitivity_mode";
 	private static final String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "shake_sensitivity_calibrated_value";
 
-	private static final String KNOCK_DETECTOR_EBABLED = "knock_detector_ebabled";
+	private static final String KNOCK_CONTROL_EBABLED = "knock_control_ebabled";
 
 	public final static int MAX_MODE_COUNT = 5;
 
@@ -50,6 +51,8 @@ public class SettingsManager {
 					TORCH_MODE_TIMEOUT + i, 0));
 			torchMode.setShakeSensorEnabled(mSharedPreferences.getBoolean(
 					TORCH_MODE_SHAKE_SENSOR_ENABLED + i, true));
+			torchMode.setKnockCount(mSharedPreferences.getInt(
+					TORCH_MODE_KNOCK_COUNT + i, 0));
 			torchModes.add(torchMode);
 		}
 
@@ -69,6 +72,8 @@ public class SettingsManager {
 					.getTimeoutSec());
 			editor.putBoolean(TORCH_MODE_SHAKE_SENSOR_ENABLED + i, torchModes
 					.get(i).isShakeSensorEnabled());
+			editor.putInt(TORCH_MODE_KNOCK_COUNT + i, torchModes.get(i)
+					.getKnockCount());
 		}
 
 		editor.commit();
@@ -128,13 +133,13 @@ public class SettingsManager {
 		}
 	}
 
-	public void writeKnockDetectorEnabled(final boolean enabled) {
+	public void writeKnockControlEnabled(final boolean enabled) {
 		final SharedPreferences.Editor editor = mSharedPreferences.edit();
-		editor.putBoolean(KNOCK_DETECTOR_EBABLED, enabled);
+		editor.putBoolean(KNOCK_CONTROL_EBABLED, enabled);
 		editor.commit();
 	}
 
-	public boolean readKnockDetectorEnabled() {
-		return mSharedPreferences.getBoolean(KNOCK_DETECTOR_EBABLED, true);
+	public boolean readKnockControlEnabled() {
+		return mSharedPreferences.getBoolean(KNOCK_CONTROL_EBABLED, false);
 	}
 }
