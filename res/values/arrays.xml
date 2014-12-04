@@ -34,4 +34,11 @@
         <item>Calibrated</item>
     </string-array>
 
+    <integer-array name="proximity_timer_values" translatable="false">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+    </integer-array>
+
 </resources>

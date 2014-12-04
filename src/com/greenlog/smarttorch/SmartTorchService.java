@@ -49,12 +49,16 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	private TorchMode mTorchMode = null;
 	private boolean mIsShaking = false;
 	private long mRemainSeconds = 0;
+	private long mRemainSecondsProximity = 0;
 	private long mWhenTurnOff;
+	private long mWhenTurnOffProximity;
 
 	private Timer mTimer = null;
+	private Timer mTimerProximity = null;
 
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
+	private Sensor mProximity;
 
 	private TorchCamera mTorchCamera;
 
@@ -70,6 +74,8 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	private TorchModes mTorchModes;
 
+	private int mProximityTimerTimeout;
+
 	private boolean mIsStartedForeground = false;
 
 	@Override
@@ -80,6 +86,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mAccelerometer = mSensorManager
 				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
 		mAccelerationHelper = new Utils.AccelerationHelper();
 
@@ -90,6 +97,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		mSensitivityValue = mSettingsManager.getSensitivityValue();
 		mIsKnockControlEnabled = mSettingsManager.readKnockControlEnabled();
 		mTorchModes = mSettingsManager.readTorchModes();
+		mProximityTimerTimeout = mSettingsManager.readProximityTimerTimeout();
 
 		startScreenReceiver();
 
@@ -105,6 +113,7 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 		stopSensor();
 		stopTimer();
+		stopTimerProximity();
 		turnLed(false);
 		stopWakeLock();
 		super.onDestroy();
@@ -208,6 +217,33 @@ public class SmartTorchService extends Service implements SensorEventListener {
 			mWakeLock.release();
 	}
 
+	private void startTimerProximity() {
+		if (mProximityTimerTimeout == 0 || mProximity == null) {
+			return;
+		}
+
+		if (mTimerProximity == null) {
+			mWhenTurnOffProximity = (new Date()).getTime()
+					+ mProximityTimerTimeout * 1000;
+			mRemainSecondsProximity = (mWhenTurnOffProximity - (new Date())
+					.getTime()) / 1000;
+
+			mTimerProximity = new Timer();
+			mTimerProximity.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					mRemainSecondsProximity = (mWhenTurnOffProximity - (new Date())
+							.getTime()) / 1000;
+					if (mRemainSecondsProximity <= 0) {
+						stopSelf();
+					} else {
+						updateNotification();
+					}
+				}
+			}, 500, 500);
+		}
+	}
+
 	private void updateTimer(final boolean forceRestart) {
 		if (mTorchMode.isInfinitely()) {
 			return;
@@ -245,6 +281,14 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		}
 	}
 
+	private void stopTimerProximity() {
+		if (mTimerProximity != null) {
+			mTimerProximity.cancel();
+			mTimerProximity.purge();
+			mTimerProximity = null;
+		}
+	}
+
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	private void updateNotification() {
@@ -255,12 +299,31 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 		String content = "";
 		if (mTorchMode.isInfinitely()) {
-			content = getString(R.string.notify_turn_off);
+			if (mTimerProximity != null) {
+				content = getString(R.string.notify_timer_pocket,
+						Utils.formatTimerTime(this, mRemainSecondsProximity,
+								false));
+			} else {
+				content = getString(R.string.notify_turn_off);
+			}
 		} else if (mTorchMode.isShakeSensorEnabled() && mIsShaking) {
-			content = getString(R.string.notify_until_stop_shaking);
+			if (mTimerProximity != null) {
+				content = getString(R.string.notify_timer_pocket,
+						Utils.formatTimerTime(this, mRemainSecondsProximity,
+								false));
+			} else {
+				content = getString(R.string.notify_until_stop_shaking);
+			}
 		} else {
-			content = getString(R.string.notify_timer,
-					Utils.formatTimerTime(this, mRemainSeconds, false));
+			if (mTimerProximity != null
+					&& mRemainSecondsProximity < mRemainSeconds) {
+				content = getString(R.string.notify_timer_pocket,
+						Utils.formatTimerTime(this, mRemainSecondsProximity,
+								false));
+			} else {
+				content = getString(R.string.notify_timer,
+						Utils.formatTimerTime(this, mRemainSeconds, false));
+			}
 		}
 
 		// Only for first time
@@ -351,6 +414,11 @@ public class SmartTorchService extends Service implements SensorEventListener {
 	}
 
 	private void startSensor() {
+		if (mProximityTimerTimeout != 0 && mProximity != null) {
+			mSensorManager.registerListener(this, mProximity,
+					SensorManager.SENSOR_DELAY_FASTEST);
+		}
+
 		if ((mTorchMode.isInfinitely() || !mTorchMode.isShakeSensorEnabled())
 				&& !mIsKnockControlEnabled) {
 			return;
@@ -365,24 +433,41 @@ public class SmartTorchService extends Service implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(final SensorEvent event) {
-		mAccelerationHelper.setEvent(event.values, event.timestamp);
+		switch (event.sensor.getType()) {
+		case Sensor.TYPE_PROXIMITY: {
+			// maybe we should compare with mProximity.getMaximumRange()?
+			if (event.values[0] < 1.0f) {
+				startTimerProximity();
+			} else {
+				stopTimerProximity();
+				updateNotification();
+			}
+			break;
+		}
 
-		final float acceleration = mAccelerationHelper.getLinearAcceleration();
+		case Sensor.TYPE_ACCELEROMETER: {
+			mAccelerationHelper.setEvent(event.values, event.timestamp);
 
-		mIsShaking = acceleration > mSensitivityValue;
+			final float acceleration = mAccelerationHelper
+					.getLinearAcceleration();
 
-		if (mIsKnockControlEnabled) {
-			final int knockCount = mAccelerationHelper.getKnockCount();
-			if (knockCount > 1) {
-				for (int i = 0; i < mTorchModes.size(); i++) {
-					if (mTorchModes.get(i).getKnockCount() == knockCount) {
-						setTorchMode(mTorchModes.get(i));
-						final long duration = vibrate(knockCount);
-						mAccelerationHelper.pauseKnockCount(duration + 100);
-						break;
+			mIsShaking = acceleration > mSensitivityValue;
+
+			if (mIsKnockControlEnabled) {
+				final int knockCount = mAccelerationHelper.getKnockCount();
+				if (knockCount > 1) {
+					for (int i = 0; i < mTorchModes.size(); i++) {
+						if (mTorchModes.get(i).getKnockCount() == knockCount) {
+							setTorchMode(mTorchModes.get(i));
+							final long duration = vibrate(knockCount);
+							mAccelerationHelper.pauseKnockCount(duration + 100);
+							break;
+						}
 					}
 				}
 			}
+			break;
+		}
 		}
 	}
 

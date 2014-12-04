@@ -40,6 +40,16 @@ public class Utils {
 		return res.getQuantityString(R.plurals.knocks, count, count);
 	}
 
+	public static String formatProximityTimerTime(final Context context,
+			final long seconds) {
+		final Resources res = context.getResources();
+		if (seconds == 0) {
+			return res.getString(R.string.proximity_disabled);
+		}
+
+		return formatTimerTime(context, seconds, false);
+	}
+
 	public static class AccelerationHelper {
 		private final static float ACCELERATION_FILTER_ALPHA_SLOW = 0.2f;
 		private final static float ACCELERATION_FILTER_ALPHA_FAST = 1f;

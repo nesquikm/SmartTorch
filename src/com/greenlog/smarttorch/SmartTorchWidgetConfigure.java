@@ -5,9 +5,12 @@ import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.StackView;
 import android.widget.Toast;
 
@@ -48,6 +52,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 
 	private boolean mFlyingTorchIsInAnimation = false;
 
+	private SmartSpinner mProximityTimerPicker;
+
 	private SmartSpinner mAccelerometerSensPicker;
 
 	private AlertDialog mDialogToConfigure;
@@ -57,6 +63,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private float mShakeSensitivityCalibratedValue;
 
 	private SettingsManager mSettingsManager;
+
+	private int mProximityTimerValues[];
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -91,6 +99,9 @@ public class SmartTorchWidgetConfigure extends Activity {
 						mLastShakeSensMode, mShakeSensitivityCalibratedValue);
 				mSettingsManager.writeKnockControlEnabled(mKnockControlCheckBox
 						.isChecked());
+				mSettingsManager
+						.writeProximityTimerTimeout(mProximityTimerValues[mProximityTimerPicker
+								.getSelectedItemPosition()]);
 				// Update ALL widgets config!
 				SmartTorchService.sendCommandToService(
 						SmartTorchWidgetConfigure.this,
@@ -130,6 +141,37 @@ public class SmartTorchWidgetConfigure extends Activity {
 				mStackView.setSelection(position);
 			}
 		}
+
+		// Proximity timer ("pocket detector") timer picker
+		// Check for proximity sensor
+		if (((SensorManager) getSystemService(Context.SENSOR_SERVICE))
+				.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null) {
+			((LinearLayout) findViewById(R.id.proximity_block))
+					.setVisibility(View.VISIBLE);
+		}
+
+		mProximityTimerPicker = (SmartSpinner) findViewById(R.id.proximity_timer_picker);
+		mProximityTimerValues = getResources().getIntArray(
+				R.array.proximity_timer_values);
+		final ArrayAdapter<String> proximityTimerValuesAdapter = new ArrayAdapter<String>(
+				this, android.R.layout.simple_spinner_item);
+		for (int i = 0; i < mProximityTimerValues.length; i++) {
+			proximityTimerValuesAdapter.add(Utils.formatProximityTimerTime(
+					this, mProximityTimerValues[i]));
+		}
+		proximityTimerValuesAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mProximityTimerPicker.setAdapter(proximityTimerValuesAdapter);
+		final int proximityTimerTimeout = mSettingsManager
+				.readProximityTimerTimeout();
+		int position = 0;
+		for (int i = 0; i < mProximityTimerValues.length; i++) {
+			if (proximityTimerTimeout == mProximityTimerValues[i]) {
+				position = i;
+				break;
+			}
+		}
+		mProximityTimerPicker.setSelectionSilently(position);
 
 		// Knock control checkbox
 		mKnockControlCheckBox = (CheckBox) findViewById(R.id.knock_control_enabled);

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
-// TODO: 01. Test with clean configuration
-
 public class SettingsManager {
 	private static final String PREFERENCE_FILE_KEY = "com.greenlog.smarttorch.PREFERENCE_FILE_KEY";
 
@@ -18,6 +16,8 @@ public class SettingsManager {
 	private static final String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "shake_sensitivity_calibrated_value";
 
 	private static final String KNOCK_CONTROL_EBABLED = "knock_control_ebabled";
+
+	private static final String PROXIMITY_TIMER_TIMEOUT = "proximity_timer_timeout";
 
 	public final static int MAX_MODE_COUNT = 5;
 
@@ -142,4 +142,15 @@ public class SettingsManager {
 	public boolean readKnockControlEnabled() {
 		return mSharedPreferences.getBoolean(KNOCK_CONTROL_EBABLED, false);
 	}
+
+	public void writeProximityTimerTimeout(final int timeout) {
+		final SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putInt(PROXIMITY_TIMER_TIMEOUT, timeout);
+		editor.commit();
+	}
+
+	public int readProximityTimerTimeout() {
+		return mSharedPreferences.getInt(PROXIMITY_TIMER_TIMEOUT, 0);
+	}
+
 }
