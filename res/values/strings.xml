@@ -28,7 +28,7 @@
     <string name="configure_until_stop_shaking">shake sensor</string>
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
     <string name="configure_knock_control">Knock control</string>
-    <string name="configure_proximity_control">Pocket detecor</string>
+    <string name="configure_proximity_control">Pocket detector</string>
     <string name="configure_enabled">enabled</string>
     <string name="configure_dialog_to_configure">To calibrate the shake sensor put the gadget on the table, click OK, and wait 5 seconds</string>
     <string name="calibration">Calibration</string>
