@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-// TODO: 04. set as large as possible large widget for lockscreen
 // TODO: 20. Feature? automatically lock screen after turn on (configurable).
 
 public class SmartTorchWidget extends AppWidgetProvider {
