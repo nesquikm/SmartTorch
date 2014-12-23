@@ -28,6 +28,7 @@
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
     <string name="configure_knock_control">Knock control</string>
     <string name="configure_proximity_control">Pocket detector</string>
+    <string name="configure_auto_lock">Auto lock</string>
     <string name="configure_enabled">enabled</string>
     <string name="configure_dialog_to_configure">To calibrate the shake sensor put the gadget on the table, click OK, and wait 5 seconds</string>
     <string name="calibration">Calibration</string>
@@ -36,5 +37,10 @@
     <string name="calibration_timer">%1$s remaining</string>
     <string name="calibration_cancelled">Calibration was cancelled</string>
     <string name="calibrated_successful">Calibrated successful</string>
+    
+    <string name="device_admin_label">Auto lock feature</string>
+    <string name="device_admin_description">Auto lock feature needs the "Lock screen" permission</string>
+    <string name="add_admin_extra_app_text">You need to allow this to enable Auto lock feature.</string>
 
+    <string name="turn_off_autolock_to_uninstall">To uninstall SmartTorch, you will have to turn the "Auto lock" feature off</string>
 </resources>

@@ -98,13 +98,33 @@
             android:orientation="vertical" >
 
             <LinearLayout
-                android:id="@+id/proximity_block"
-                android:visibility="gone"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/widget_group_background"
                 android:orientation="vertical"
                 android:padding="8dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/configure_auto_lock" />
+
+                <CheckBox
+                    android:id="@+id/auto_lock_enabled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/configure_enabled" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/proximity_block"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/widget_group_background"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="gone" >
 
                 <TextView
                     android:layout_width="wrap_content"

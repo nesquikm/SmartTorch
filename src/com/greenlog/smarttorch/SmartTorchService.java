@@ -129,13 +129,12 @@ public class SmartTorchService extends Service implements SensorEventListener {
 		switch (intent.getAction()) {
 		case SERVICE_ACTION_TURN_ON:
 			setTorchMode(new TorchMode(intent.getExtras()));
-			// mTorchMode = new TorchMode(intent.getExtras());
-			// startSensor();
-			// updateTimer(true);
-			// final Notification notification = updateNotification();
-			// startForeground(NOTIFY_ID, notification);
-			// startWakeLock();
-			// turnLed(true);
+
+			// Is Auto lock feature enabled?
+			if (DeviceAdminTorchReceiver.isAdminActive(this)) {
+				DeviceAdminTorchReceiver.getDevicePolicyManager(this).lockNow();
+			}
+
 			break;
 		case SERVICE_ACTION_TURN_OFF:
 			stopSelf();

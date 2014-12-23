@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.admin.DevicePolicyManager;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,6 +40,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private final static String SHAKE_SENSITIVITY_CALIBRATED_VALUE = "com.greenlog.smarttorch.SHAKE_SENSITIVITY_CALIBRATED_VALUE";
 	private final static String SHAKE_SENSITIVITY_MODE_RESET = "com.greenlog.smarttorch.SHAKE_SENSITIVITY_MODE_RESET";
 
+	private final static int REQUEST_CODE_ENABLE_ADMIN = 1;
+
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
 	private TorchModeAdapter mTorchModeAdapter;
@@ -65,6 +68,8 @@ public class SmartTorchWidgetConfigure extends Activity {
 	private SettingsManager mSettingsManager;
 
 	private int mProximityTimerValues[];
+
+	private CheckBox mAutoLockCheckbox;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -226,6 +231,42 @@ public class SmartTorchWidgetConfigure extends Activity {
 				});
 			}
 		});
+
+		// Auto lock checkbox
+		mAutoLockCheckbox = (CheckBox) findViewById(R.id.auto_lock_enabled);
+		mAutoLockCheckbox
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(
+							final CompoundButton buttonView,
+							final boolean isChecked) {
+						if (DeviceAdminTorchReceiver
+								.isAdminActive(SmartTorchWidgetConfigure.this) != isChecked) {
+							if (isChecked) {
+								final Intent intent = new Intent(
+										DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+								intent.putExtra(
+										DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+										DeviceAdminTorchReceiver
+												.getComponentName());
+								intent.putExtra(
+										DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+										getString(R.string.add_admin_extra_app_text));
+								startActivityForResult(intent,
+										REQUEST_CODE_ENABLE_ADMIN);
+							} else {
+								DeviceAdminTorchReceiver
+										.getDevicePolicyManager(
+												SmartTorchWidgetConfigure.this)
+										.removeActiveAdmin(
+												DeviceAdminTorchReceiver
+														.getComponentName());
+							}
+						}
+					}
+				});
+		mAutoLockCheckbox.setChecked(DeviceAdminTorchReceiver
+				.isAdminActive(SmartTorchWidgetConfigure.this));
 
 		// Flying torch
 		mFlyingTorch = (ImageView) findViewById(R.id.flying_torch);
@@ -412,11 +453,21 @@ public class SmartTorchWidgetConfigure extends Activity {
 			mDialogToConfigure = null;
 		}
 
-		// So, we Spinner.setSelectionSilently() don't work here, and we put the
-		// flag onSaveInstanceState
+		// So, Spinner.setSelectionSilently() don't work here, and we put
+		// the flag onSaveInstanceState
 		cancelCalibration();
 
 		super.onDestroy();
+	}
+
+	@Override
+	protected void onActivityResult(final int requestCode,
+			final int resultCode, final Intent data) {
+		if (requestCode == REQUEST_CODE_ENABLE_ADMIN) {
+			mAutoLockCheckbox.setChecked(DeviceAdminTorchReceiver
+					.isAdminActive(SmartTorchWidgetConfigure.this));
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void cancelCalibration() {
