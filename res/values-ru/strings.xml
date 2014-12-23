@@ -29,7 +29,6 @@
     <string name="cant_turn_on">Не могу включить фонарь</string>
     <string name="double_click_to_configure">Дважды кликните виджет для того, чтобы настроить его заново</string>
     <string name="configure_activity_title">Настройка Умного Фонаря</string>
-    <string name="configure_until_stop_shaking">датчик тряски</string>
     <string name="configure_shaking_sensitivity">Чувств. к тряске</string>
     <string name="configure_knock_control">Управление ударами</string>
     <string name="configure_proximity_control">Выкл. в кармане</string>

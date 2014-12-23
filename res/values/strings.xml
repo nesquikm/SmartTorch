@@ -25,7 +25,6 @@
     <string name="cant_turn_on">Can\'t turn on the torch now: your camera is busy</string>
     <string name="double_click_to_configure">Double-click the widget to configure it again</string>
     <string name="configure_activity_title">SmartTorch configuration</string>
-    <string name="configure_until_stop_shaking">shake sensor</string>
     <string name="configure_shaking_sensitivity">Shaking sensitivity</string>
     <string name="configure_knock_control">Knock control</string>
     <string name="configure_proximity_control">Pocket detector</string>
